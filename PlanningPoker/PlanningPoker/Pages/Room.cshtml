@@ -1,0 +1,52 @@
+﻿@page "{roomId}"
+
+@{
+    string userName = string.Empty;
+    var cookieUserName = Request.Cookies["userName"];
+
+    var roomName = string.Empty;
+
+    if (RouteData.Values["roomId"] != null)
+    {
+        roomName = RouteData.Values["roomId"].ToString();
+    }
+    else
+    {
+        Response.Redirect("/");
+    }
+
+    if (cookieUserName != null)
+    {
+        userName = cookieUserName;
+    }
+    else
+    {
+
+       Response.Redirect($"/?returnUrl=/room/{roomName}");
+    }
+  
+}
+
+<div class="container">
+    <div>
+        <h1>Planning Poker</h1>
+        <input type="hidden" id="roomName" value="@roomName"/>
+        <input type="hidden" id="userName" value="@userName" />
+    </div>
+   
+    <div>
+        <button class="vote" data-value="1">1</button>
+        <button class="vote" data-value="2">2</button>
+        <button class="vote" data-value="3">3</button>
+        <button class="vote" data-value="5">5</button>
+        <button class="vote" data-value="8">8</button>
+    </div>
+    <div>
+        <button id="resetVotes">Reset Votes</button>
+    </div>
+    <div>
+        <ul id="votes"></ul>
+    </div>
+</div>
+<script src="~/js/signalr/dist/browser/signalr.js"></script>
+<script src="~/js/poker.js"></script>
