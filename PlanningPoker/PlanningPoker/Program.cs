@@ -1,4 +1,5 @@
 using PlanningPoker.Hubs;
+using PlanningPoker.Services;
 
 namespace PlanningPoker
 {
@@ -11,6 +12,7 @@ namespace PlanningPoker
             // Add services to the container.
             builder.Services.AddRazorPages();
             builder.Services.AddSignalR();
+            builder.Services.AddScoped<IavatarService, AvatarService>();
 
             var app = builder.Build();
 

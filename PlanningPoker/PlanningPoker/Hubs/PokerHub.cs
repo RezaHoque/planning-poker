@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.SignalR;
+using PlanningPoker.Services;
 using System.Collections.Concurrent;
 
 namespace PlanningPoker.Hubs
@@ -7,6 +8,13 @@ namespace PlanningPoker.Hubs
     {
         private static readonly ConcurrentDictionary<string, List<string>> RoomUsers = new();
         private static readonly ConcurrentDictionary<string, string> UserConnections = new();
+        private static readonly ConcurrentDictionary<string, string> UserAvatars = new();
+        private readonly IavatarService _avatarService;
+
+        public PokerHub(IavatarService avatarService)
+        {
+            _avatarService = avatarService;
+        }
         public async Task SendMessage(string user, string message)
         {
             await Clients.All.SendAsync("ReceiveMessage", user, message);
@@ -20,13 +28,36 @@ namespace PlanningPoker.Hubs
                 {
                     users.Add(userName);
                 }
+
+                if (!UserAvatars.ContainsKey(userName))
+                {
+                    UserAvatars[userName] = _avatarService.GetAvatar(userName, roomName).Result;
+                }
+
                 UserConnections[Context.ConnectionId] = userName;
             }
+            var userListWithAvatars = users.Select(user => new
+            {
+                UserName = user,
+                Avatar = UserAvatars[user]
+            }).ToList();
 
             await Groups.AddToGroupAsync(Context.ConnectionId, roomName);
-            await Clients.Caller.SendAsync("ReceiveUserList", users);
-            await Clients.OthersInGroup(roomName).SendAsync("UserJoined", $"{userName} has joined the room.");
+            // await Clients.Group(roomName).SendAsync("UserJoined", userName, users);
+            await Clients.Group(roomName).SendAsync("UserJoined", new
+            {
+                UserName = userName,
+                Avatar = UserAvatars[userName]
+            }, userListWithAvatars);
+
+            await Clients.Caller.SendAsync("ReceiveUserList", userListWithAvatars);
+            //await Clients.OthersInGroup(roomName).SendAsync("UserJoined", $"{userName} has joined the room.");
         }
+        //public async Task GetAvatar(string userName, string roomName)
+        //{
+        //    var avatar = await _avatarService.GetAvatar(userName, roomName);
+        //    await Clients.Caller.SendAsync("ReceiveAvatar", avatar);
+        //}
         public async Task LeaveRoom(string roomName, string userName)
         {
             await Groups.RemoveFromGroupAsync(Context.ConnectionId, roomName);

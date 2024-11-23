@@ -20,3 +20,25 @@ html {
 body {
   margin-bottom: 60px;
 }
+
+.avatarContainer {
+    display: flex;
+    flex-wrap: wrap; 
+    gap: 10px;
+    justify-content: center; 
+}
+
+.thumbnail {
+    display: inline-block;
+    text-align: center;
+}
+.avarageVote{
+    margin-top: 10px;
+    margin-bottom:10px;
+    font-size: 40px;
+    font-weight: bold;
+    color: #258cfb;
+    padding: 10px;
+    border-radius: 10px;
+    border:1px solid #258cfb;
+}
