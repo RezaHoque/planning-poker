@@ -9,6 +9,7 @@ namespace PlanningPoker.Hubs
         private static readonly ConcurrentDictionary<string, List<string>> RoomUsers = new();
         private static readonly ConcurrentDictionary<string, string> UserConnections = new();
         private static readonly ConcurrentDictionary<string, string> UserAvatars = new();
+        private static readonly ConcurrentDictionary<string, string> UserVotes = new();
         private readonly IavatarService _avatarService;
 
         public PokerHub(IavatarService avatarService)
@@ -53,11 +54,7 @@ namespace PlanningPoker.Hubs
             await Clients.Caller.SendAsync("ReceiveUserList", userListWithAvatars);
             //await Clients.OthersInGroup(roomName).SendAsync("UserJoined", $"{userName} has joined the room.");
         }
-        //public async Task GetAvatar(string userName, string roomName)
-        //{
-        //    var avatar = await _avatarService.GetAvatar(userName, roomName);
-        //    await Clients.Caller.SendAsync("ReceiveAvatar", avatar);
-        //}
+
         public async Task LeaveRoom(string roomName, string userName)
         {
             await Groups.RemoveFromGroupAsync(Context.ConnectionId, roomName);
@@ -65,8 +62,21 @@ namespace PlanningPoker.Hubs
         }
         public async Task SubmitVote(string roomName, string userName, string vote)
         {
-            await Clients.Group(roomName).SendAsync("ReceiveMessage", $"{userName} has voted.");
             await Clients.Group(roomName).SendAsync("ReceiveVote", userName, vote);
+        }
+        public async Task RevealVotes(string roomName, string[] userVoted, string[] votes)
+        {
+            List<int> intVotes = new List<int>();
+            foreach (string str in votes)
+            {
+                if (int.TryParse(str, out int val))
+                {
+                    intVotes.Add(val);
+                }
+            }
+            var avarageVotes = intVotes.Sum() / userVoted.Count();
+
+            await Clients.Group(roomName).SendAsync("ReceiveAvarageVote", avarageVotes);
         }
         public async Task ClearVotes(string roomName)
         {

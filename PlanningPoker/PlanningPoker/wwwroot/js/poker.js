@@ -4,17 +4,24 @@ var connection = new signalR.HubConnectionBuilder().withUrl("/pokerHub").build()
 
 const roomName = document.getElementById("roomName");
 const userName = document.getElementById("userName");
-//const joinRoomButton = document.getElementById("joinRoom");
+const avarageVoteContainer = document.getElementById("avarageVote");
 const votesList = document.getElementById("paticipants");
 const voteButtons = document.querySelectorAll(".vote");
 const resetVotesButton = document.getElementById("resetVotes");
+const revealVotesButton = document.getElementById("revealVotes");
+const navUserName = document.getElementById("navUserName");
 
 let currentRoom = "";
 let currentUser = "";
+let avarageVote = 0;
+let totalUsers = 0;
+let votes = [];
+let userVoted = [];
+const roomVotes = new Map();
 
 connection.on("UserJoined", function (newUser, userList) {
-    console.log(newUser);
-
+    //console.log(newUser);
+    totalUsers = userList.length;
     votesList.innerHTML = "";
     userList.forEach(user => {
         const thumbnailDiv = createUserThumbnail(user.userName, user.avatar);
@@ -30,17 +37,54 @@ connection.on("ReceiveUserList", (userList) => {
     });
 });
 connection.on("ReceiveVote", function (user, vote) {
-    const item = document.createElement("li");
-    item.textContent = `${userName} voted: ${vote}`;
-    votesList.appendChild(item);
+    var badgeId = "userBadge" + user + currentRoom;
+    const badge = document.getElementById(badgeId);
+    badge.innerHTML = '<i class="bi bi-check-circle fs-5"></i>';
+    badge.className = "badge bg-success";
+    badge.style.fontSize = "18px"
+    votes.push(vote);
+    userVoted.push(user);
+    addVote(currentRoom, user, vote);
 });
+connection.on("ReceiveAvarageVote", function (avarage) {
+ 
+    const avarageVotebadge = document.createElement("span");
+    avarageVotebadge.className = "badge bg-light text-center";
+    avarageVotebadge.style.top = "10px";
+    avarageVotebadge.style.left = "50%";
+    avarageVotebadge.style.color = "black";
+    avarageVotebadge.style.minWidth = "60px";
+    avarageVotebadge.style.height = "60px";
+    avarageVotebadge.style.lineHeight = "30px";
+    avarageVotebadge.style.borderRadius = "20%";
+    avarageVotebadge.style.fontSize = "35px";
+    avarageVotebadge.textContent = avarage;
 
+    avarageVoteContainer.innerHTML = "";
+    avarageVoteContainer.appendChild(avarageVotebadge);
+
+    const votes = getVotesForRoom(currentRoom);
+
+    votes.forEach((vote, userName) => {
+        var badgeId = "userBadge" + userName + currentRoom;
+        const badge = document.querySelector(`#${badgeId}`);
+        console.log(badgeId);
+        if (badge) {
+            badge.innerHTML = vote; // Display the vote
+            badge.className = "badge bg-success";
+            badge.style.fontSize = "22px";
+        }
+    });
+
+});
 connection.on("VotesReset", () => {
     votesList.innerHTML = "";
 });
 connection.start().then(function () {
     currentRoom = roomName.value;
     currentUser = userName.value;
+    navUserName.textContent = currentUser;
+    var badgeId = "userBadge" + currentUser + currentRoom;
     connection.invoke("JoinRoom", currentRoom, currentUser).catch(function (err) {
         return console.error(err.toString());
     });
@@ -51,6 +95,10 @@ connection.start().then(function () {
 voteButtons.forEach(button => {
     button.addEventListener("click", async () => {
         const vote = button.getAttribute("data-value");
+        //setting data attribute.
+        var badgeId = "userBadge" + currentUser + currentRoom;
+        const badge = document.getElementById(badgeId);
+        badge.dataset.vote = vote;
         await connection.invoke("SubmitVote", currentRoom, currentUser, vote);
     });
 });
@@ -59,27 +107,62 @@ resetVotesButton.addEventListener("click", async () => {
     await connection.invoke("ResetVotes", roomName);
 });
 
+revealVotesButton.addEventListener("click", async () => {
+    await connection.invoke("RevealVotes", currentRoom, userVoted, votes).catch(function (err) {
+        return console.error(err.toString());
+    });
+});
+
 function createUserThumbnail(user, avatarUrl) {
     // Create a container div for the thumbnail
     const thumbnailDiv = document.createElement("div");
-    thumbnailDiv.className = "thumbnail text-center"; // Bootstrap class for styling
+    thumbnailDiv.className = "thumbnail text-center"; 
+
+    // Create the badge
+    const badge = document.createElement("span");
+    badge.className = "badge bg-light";
+    badge.style.top = "10px";
+    badge.style.left = "50%";
+
+    badge.style.minWidth = "50px"; 
+    badge.style.height = "50px"; 
+    badge.style.lineHeight = "30px";
+    badge.style.borderRadius = "30%"; 
+    badge.textContent = "0"; 
+    badge.style.fontSize = "25px";
+    badge.id = "userBadge" + user + currentRoom;
 
     // Create an image element
     const img = document.createElement("img");
     img.src = avatarUrl; // Set the avatar URL
-   // img.alt = '${user}'s avatar''; // Alt text for the image
-    img.className = "img-thumbnail"; // Optional: add Bootstrap's thumbnail class
-    img.style.width = "100px"; // Adjust the size as needed
-    img.style.height = "100px"; // Adjust the size as needed
+    img.className = "img-thumbnail";
+    img.style.width = "100px"; 
+    img.style.height = "100px";
 
     // Create a caption for the username
     const caption = document.createElement("p");
     caption.textContent = user;
-    caption.className = "mt-2"; // Add some margin on top for spacing
+    caption.className = "mt-2";
 
-    // Append the image and caption to the thumbnail div
+    
     thumbnailDiv.appendChild(img);
     thumbnailDiv.appendChild(caption);
+    thumbnailDiv.appendChild(badge);
 
     return thumbnailDiv;
+}
+function addVote(roomName, userName, vote) {
+    if (!roomVotes.has(roomName)) {
+        roomVotes.set(roomName, new Map());
+    }
+    const votes = roomVotes.get(roomName);
+    votes.set(userName, vote);
+}
+function getVotesForRoom(roomName) {
+    return roomVotes.get(roomName) || new Map();
+}
+function clearVotesForRoom(roomName) {
+    if (roomVotes.has(roomName)) {
+        roomVotes.get(roomName).clear();
+    }
 }
