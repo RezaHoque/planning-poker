@@ -13,28 +13,35 @@ namespace PlanningPoker.Services
         }
         public async Task<string> GetAvatar(string userName, string roomId)
         {
-            var avatar = await _dbContext.UserAvatars.FirstOrDefaultAsync(x => x.UserName == userName && x.RoomId == roomId);
-            if (avatar != null)
+            try
             {
-                return avatar.Avatar;
+                var avatar = await _dbContext.UserAvatars.FirstOrDefaultAsync(x => x.UserName == userName && x.RoomId == roomId);
+                if (avatar != null)
+                {
+                    return avatar.Avatar;
+                }
+
+                var avatarApiEndpoint = "https://api.multiavatar.com/";
+                var userAvaratUrl = $"{avatarApiEndpoint}{userName}.png";
+
+                var userAvatar = new UserAvatar
+                {
+                    Id = Guid.NewGuid().ToString(),
+                    UserName = userName,
+                    Avatar = userAvaratUrl,
+                    RoomId = roomId
+                };
+                _dbContext.UserAvatars.Add(userAvatar);
+                await _dbContext.SaveChangesAsync();
+                return userAvaratUrl;
+            }
+            catch (Exception ex)
+            {
+                //TODO: Log error
+                return null;
+
             }
 
-            var avatarApiEndpoint = "https://api.multiavatar.com/";
-            var userAvaratUrl = $"{avatarApiEndpoint}{userName}.png";
-            // var httpClient = new HttpClient();
-            // var response = httpClient.GetAsync($"{avatarApiEndpoint}{userName}").Result;
-            //var content = response.Content.ReadAsStringAsync().Result;
-
-            var userAvatar = new UserAvatar
-            {
-                Id = Guid.NewGuid().ToString(),
-                UserName = userName,
-                Avatar = userAvaratUrl,
-                RoomId = roomId
-            };
-            _dbContext.UserAvatars.Add(userAvatar);
-            await _dbContext.SaveChangesAsync();
-            return userAvaratUrl;
         }
 
     }

@@ -5,12 +5,14 @@ document.addEventListener("DOMContentLoaded", function () {
     const joinRoomBtn = document.getElementById("joinRoomBtn");
     const navUserName = document.getElementById("navUserName");
     const returnUrl = getQueryStringParameter("returnUrl");
+    const userName = document.getElementById("userName");
 
 
     if (!getCookie("userName")) {
         leaveButton.style.display = "none";
     } else {
         navUserName.textContent = getCookie("userName");
+        userName.value = getCookie("userName");
     }
    
     if (joinRoomBtn) {
