@@ -120,7 +120,7 @@ function createUserThumbnail(user, avatarUrl) {
 
     // Create the badge
     const badge = document.createElement("span");
-    badge.className = "badge bg-light";
+    badge.className = "badge bg-light badge-soft";
     badge.style.top = "10px";
     badge.style.left = "50%";
 

@@ -7,9 +7,11 @@ namespace PlanningPoker.Services
     public class AvatarService : IavatarService
     {
         private readonly PokerContext _dbContext;
-        public AvatarService()
+        private readonly IConfiguration _configuration;
+        public AvatarService(IConfiguration configuration)
         {
             _dbContext = new PokerContext();
+            _configuration = configuration;
         }
         public async Task<string> GetAvatar(string userName, string roomId)
         {
@@ -21,7 +23,7 @@ namespace PlanningPoker.Services
                     return avatar.Avatar;
                 }
 
-                var avatarApiEndpoint = "https://api.multiavatar.com/";
+                var avatarApiEndpoint = _configuration["Api:Avatar:BaseUrl"];
                 var userAvaratUrl = $"{avatarApiEndpoint}{userName}.png";
 
                 var userAvatar = new UserAvatar

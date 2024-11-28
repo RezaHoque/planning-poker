@@ -157,4 +157,10 @@ body {
         padding: 10px 30px;
     }
 }
-
+.badge-soft {
+    background-color: #6c757d52 !important;
+}
+.vote {
+    background-color: #d4e6f8 !important;
+    border-color: #cad6e1 !important;
+}
