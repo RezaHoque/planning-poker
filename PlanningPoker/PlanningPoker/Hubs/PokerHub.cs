@@ -78,9 +78,9 @@ namespace PlanningPoker.Hubs
 
             await Clients.Group(roomName).SendAsync("ReceiveAvarageVote", avarageVotes);
         }
-        public async Task ClearVotes(string roomName)
+        public async Task ResetVotes(string roomName)
         {
-            await Clients.Group(roomName).SendAsync("ReceiveMessage", "Votes have been cleared.");
+            //await Clients.Group(roomName).SendAsync("ReceiveMessage", "Votes have been cleared.");
             await Clients.Group(roomName).SendAsync("ClearVotes");
         }
         public override async Task OnDisconnectedAsync(Exception? exception)

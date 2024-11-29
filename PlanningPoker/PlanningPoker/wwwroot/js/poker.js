@@ -49,6 +49,7 @@ connection.on("ReceiveVote", function (user, vote) {
 connection.on("ReceiveAvarageVote", function (avarage) {
  
     const avarageVotebadge = document.createElement("span");
+    avarageVotebadge.id = "avarageVoteBadge";
     avarageVotebadge.className = "badge bg-light text-center";
     avarageVotebadge.style.top = "10px";
     avarageVotebadge.style.left = "50%";
@@ -77,8 +78,22 @@ connection.on("ReceiveAvarageVote", function (avarage) {
     });
 
 });
-connection.on("VotesReset", () => {
-    votesList.innerHTML = "";
+connection.on("ClearVotes", () => {
+    const votes = getVotesForRoom(currentRoom);
+    const avarageVotebadge = document.getElementById(avarageVoteBadge);
+
+    votes.forEach((vote, userName) => {
+        var badgeId = "userBadge" + userName + currentRoom;
+        const badge = document.querySelector(`#${badgeId}`);
+        console.log(badgeId);
+        if (badge) {
+            badge.innerHTML = "";
+            badge.textContent = "0";
+            badge.className = "badge bg-light badge-soft";
+            badge.style.fontSize = "25px";
+        }
+    });
+    avarageVoteContainer.innerHTML = "";
 });
 connection.start().then(function () {
     currentRoom = roomName.value;
@@ -104,7 +119,11 @@ voteButtons.forEach(button => {
 });
 
 resetVotesButton.addEventListener("click", async () => {
-    await connection.invoke("ResetVotes", roomName);
+    await connection.invoke("ResetVotes", currentRoom).catch(function (err) {
+        return console.error(err.toString());
+    });
+    
+   
 });
 
 revealVotesButton.addEventListener("click", async () => {
