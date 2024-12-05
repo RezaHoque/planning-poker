@@ -13,6 +13,9 @@ namespace PlanningPoker
             builder.Services.AddRazorPages();
             builder.Services.AddSignalR();
             builder.Services.AddScoped<IavatarService, AvatarService>();
+            builder.Services.AddScoped<IroomService, RoomService>();
+            builder.Services.AddScoped<IuserService, UserService>();
+
 
             var app = builder.Build();
 

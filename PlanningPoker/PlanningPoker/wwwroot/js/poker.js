@@ -22,15 +22,21 @@ const roomVotes = new Map();
 connection.on("UserJoined", function (newUser, userList) {
     //console.log(newUser);
     totalUsers = userList.length;
-    votesList.innerHTML = "";
-    userList.forEach(user => {
-        const thumbnailDiv = createUserThumbnail(user.userName, user.avatar);
-        votesList.appendChild(thumbnailDiv);
-    });
+    //votesList.innerHTML = "";
+    //userList.forEach(user => {
+    //    const thumbnailDiv = createUserThumbnail(user.userName, user.avatar);
+    //    votesList.appendChild(thumbnailDiv);
+    //});
+
+    const thumbnailDiv = createUserThumbnail(newUser.name, newUser.avatar);
+    votesList.appendChild(thumbnailDiv);
+    
+    
 });
 
 connection.on("ReceiveUserList", (userList) => {
     votesList.innerHTML = "";
+    console.log(userList);
     userList.forEach(user => {
         const thumbnailDiv = createUserThumbnail(user.userName, user.avatar);
         votesList.appendChild(thumbnailDiv);
@@ -135,7 +141,8 @@ revealVotesButton.addEventListener("click", async () => {
 function createUserThumbnail(user, avatarUrl) {
     // Create a container div for the thumbnail
     const thumbnailDiv = document.createElement("div");
-    thumbnailDiv.className = "thumbnail text-center"; 
+    thumbnailDiv.className = "thumbnail text-center";
+    thumbnailDiv.id = "userThumbnail_" + user + currentRoom;
 
     // Create the badge
     const badge = document.createElement("span");

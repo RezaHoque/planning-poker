@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.SignalR;
+using PlanningPoker.Data;
 using PlanningPoker.Services;
 using System.Collections.Concurrent;
 
@@ -11,10 +12,16 @@ namespace PlanningPoker.Hubs
         private static readonly ConcurrentDictionary<string, string> UserAvatars = new();
         private static readonly ConcurrentDictionary<string, string> UserVotes = new();
         private readonly IavatarService _avatarService;
+        private readonly PokerContext _dbContext;
+        private readonly IroomService _roomService;
+        private readonly IuserService _userService;
 
-        public PokerHub(IavatarService avatarService)
+        public PokerHub(IavatarService avatarService, IroomService roomService, IuserService userService)
         {
             _avatarService = avatarService;
+            _dbContext = new PokerContext();
+            _roomService = roomService;
+            _userService = userService;
         }
         public async Task SendMessage(string user, string message)
         {
@@ -22,35 +29,46 @@ namespace PlanningPoker.Hubs
         }
         public async Task JoinRoom(string roomName, string userName)
         {
-            var users = RoomUsers.GetOrAdd(roomName, _ => new List<string>());
-            lock (users)
+            // add user to db
+            var room = await _roomService.GetOrCreateRoomAsync(roomName, userName, Context.ConnectionId);
+            var user = await _userService.GetOrCreateUserAsync(userName, Context.ConnectionId);
+
+            bool isNewUser = false;
+            if (!await _roomService.UserExistsInRoom(roomName, userName))
             {
-                if (!users.Contains(userName))
-                {
-                    users.Add(userName);
-                }
+                await _roomService.JoinRoomAsync(room, user);
+                isNewUser = true;
 
-                if (!UserAvatars.ContainsKey(userName))
-                {
-                    UserAvatars[userName] = _avatarService.GetAvatar(userName, roomName).Result;
-                }
-
-                UserConnections[Context.ConnectionId] = userName;
             }
-            var userListWithAvatars = users.Select(user => new
+
+            var usersInRoom = await _roomService.GetUsersInRoomAsync(roomName);
+
+            var userListWithAvatars = usersInRoom.Select(user => new
             {
-                UserName = user,
-                Avatar = UserAvatars[user]
+                UserName = user.Name,
+                Avatar = user.Avatar
             }).ToList();
 
             await Groups.AddToGroupAsync(Context.ConnectionId, roomName);
-            // await Clients.Group(roomName).SendAsync("UserJoined", userName, users);
-            await Clients.Group(roomName).SendAsync("UserJoined", new
-            {
-                UserName = userName,
-                Avatar = UserAvatars[userName]
-            }, userListWithAvatars);
+            //// await Clients.Group(roomName).SendAsync("UserJoined", userName, users);
 
+            //if (isNewUser)
+            //{
+            //    await Clients.Group(roomName).SendAsync("UserJoined", new User
+            //    {
+            //        Name = UserAvatars.FirstOrDefault(x => x.Key == userName).Key,
+            //        Avatar = UserAvatars.FirstOrDefault(x => x.Key == userName).Value
+            //    }, userListWithAvatars);
+            //}
+
+            if (isNewUser)
+            {
+                await Clients.Group(roomName).SendAsync("UserJoined", new User
+                {
+                    Name = usersInRoom.FirstOrDefault(x => x.Name == userName).Name,
+                    Avatar = usersInRoom.FirstOrDefault(x => x.Name == userName).Avatar
+                }, userListWithAvatars);
+            }
             await Clients.Caller.SendAsync("ReceiveUserList", userListWithAvatars);
             //await Clients.OthersInGroup(roomName).SendAsync("UserJoined", $"{userName} has joined the room.");
         }

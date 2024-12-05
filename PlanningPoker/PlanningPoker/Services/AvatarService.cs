@@ -46,5 +46,9 @@ namespace PlanningPoker.Services
 
         }
 
+        public Task<User> SaveAvatar(string userName, string roomId, string avatar)
+        {
+            throw new NotImplementedException();
+        }
     }
 }
