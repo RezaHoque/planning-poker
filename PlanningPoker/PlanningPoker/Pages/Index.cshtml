@@ -20,13 +20,22 @@
 <div class="container">
     <div class="row">
         <div class="col col-6">
-            <div class="mb-3">
-                <label for="txtUserName" class="form-label">Enter your name</label>
+            <div class="form-floating mb-3">
                 <input type="text" class="form-control" id="userName" placeholder="For ex: Donald Trump" required>
+                <label for="userName" class="form-label" ">Enter your name</label>
                 <input type="hidden" id="roomId" value="@roomId"/>
             </div>
             <div class="mb-3">
                 <button class="button-50-l" id="joinRoomBtn"></button>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-8">
+            <div class="h-100 p-5 bg-body-tertiary border rounded-3">
+                <h4>How it works</h4>
+                <p>Someone needs to start a room by entering a name. And then when he is in the room, he needs to copy the url and share with the team.</p>
+               
             </div>
         </div>
     </div>

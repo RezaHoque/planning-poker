@@ -20,14 +20,8 @@ let userVoted = [];
 const roomVotes = new Map();
 
 connection.on("UserJoined", function (newUser, userList) {
-    //console.log(newUser);
-    totalUsers = userList.length;
-    //votesList.innerHTML = "";
-    //userList.forEach(user => {
-    //    const thumbnailDiv = createUserThumbnail(user.userName, user.avatar);
-    //    votesList.appendChild(thumbnailDiv);
-    //});
 
+    totalUsers = userList.length;
     const thumbnailDiv = createUserThumbnail(newUser.name, newUser.avatar);
     votesList.appendChild(thumbnailDiv);
     
@@ -114,7 +108,6 @@ connection.start().then(function () {
 });
 
 connection.on("Leaveroom", (userName) => {
-    //TODO: remove user from list of users
     var badgeId = "userThumbnail_" + userName + currentRoom;
     const badge = document.getElementById(badgeId);
     badge.remove();
@@ -122,7 +115,6 @@ connection.on("Leaveroom", (userName) => {
 voteButtons.forEach(button => {
     button.addEventListener("click", async () => {
         const vote = button.getAttribute("data-value");
-        //setting data attribute.
         var badgeId = "userBadge" + currentUser + currentRoom;
         const badge = document.getElementById(badgeId);
         badge.dataset.vote = vote;
