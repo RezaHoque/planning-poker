@@ -4,6 +4,8 @@ namespace PlanningPoker.Services
 {
     public interface IuserService
     {
-        Task<User> GetOrCreateUserAsync(string userName, string connectionId);
+        Task<User> GetOrCreateUserAsync(string userName);
+        Task<User> GetUserByConnectionId(string connectionId);
+
     }
 }

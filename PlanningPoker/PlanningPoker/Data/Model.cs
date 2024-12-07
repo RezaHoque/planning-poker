@@ -22,7 +22,6 @@ namespace PlanningPoker.Data
     {
         public string Id { get; set; }
         public string Name { get; set; }
-        public string ConnectionId { get; set; }
         public string Avatar { get; set; }
         public DateTime JoinDate { get; set; }
 
@@ -42,6 +41,7 @@ namespace PlanningPoker.Data
         public User User { get; set; }
         public string RoomId { get; set; }
         public Room Room { get; set; }
+        public string ConnectionId { get; set; }
     }
     public class UserAvatar
     {

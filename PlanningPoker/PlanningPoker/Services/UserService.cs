@@ -12,9 +12,9 @@ namespace PlanningPoker.Services
             _dbContext = new PokerContext();
             _avatarService = avatarService;
         }
-        public async Task<User> GetOrCreateUserAsync(string userName, string connectionId)
+        public async Task<User> GetOrCreateUserAsync(string userName)
         {
-            if (!string.IsNullOrEmpty(userName) && !string.IsNullOrEmpty(connectionId))
+            if (!string.IsNullOrEmpty(userName))
             {
                 var existingUser = await _dbContext.Users.FirstOrDefaultAsync(x => x.Name == userName);
                 if (existingUser == null)
@@ -24,7 +24,6 @@ namespace PlanningPoker.Services
                         Id = Guid.NewGuid().ToString(),
                         Name = userName,
                         JoinDate = DateTime.Now,
-                        ConnectionId = connectionId,
                         Avatar = string.Empty
 
                     };
@@ -35,6 +34,17 @@ namespace PlanningPoker.Services
                 return existingUser;
             }
             return null;
+        }
+
+        public async Task<User> GetUserByConnectionId(string connectionId)
+        {
+            var user = await _dbContext.UserRooms.Include(x => x.User).FirstOrDefaultAsync(x => x.ConnectionId == connectionId);
+            if (user != null)
+            {
+                return user.User;
+            }
+            return null;
+
         }
     }
 }

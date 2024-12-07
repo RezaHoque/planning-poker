@@ -30,13 +30,13 @@ namespace PlanningPoker.Hubs
         public async Task JoinRoom(string roomName, string userName)
         {
             // add user to db
-            var room = await _roomService.GetOrCreateRoomAsync(roomName, userName, Context.ConnectionId);
-            var user = await _userService.GetOrCreateUserAsync(userName, Context.ConnectionId);
+            var room = await _roomService.GetOrCreateRoomAsync(roomName, userName);
+            var user = await _userService.GetOrCreateUserAsync(userName);
 
             bool isNewUser = false;
             if (!await _roomService.UserExistsInRoom(roomName, userName))
             {
-                await _roomService.JoinRoomAsync(room, user);
+                await _roomService.JoinRoomAsync(room, user, Context.ConnectionId);
                 isNewUser = true;
 
             }
@@ -50,16 +50,6 @@ namespace PlanningPoker.Hubs
             }).ToList();
 
             await Groups.AddToGroupAsync(Context.ConnectionId, roomName);
-            //// await Clients.Group(roomName).SendAsync("UserJoined", userName, users);
-
-            //if (isNewUser)
-            //{
-            //    await Clients.Group(roomName).SendAsync("UserJoined", new User
-            //    {
-            //        Name = UserAvatars.FirstOrDefault(x => x.Key == userName).Key,
-            //        Avatar = UserAvatars.FirstOrDefault(x => x.Key == userName).Value
-            //    }, userListWithAvatars);
-            //}
 
             if (isNewUser)
             {
@@ -76,7 +66,8 @@ namespace PlanningPoker.Hubs
         public async Task LeaveRoom(string roomName, string userName)
         {
             await Groups.RemoveFromGroupAsync(Context.ConnectionId, roomName);
-            await Clients.Group(roomName).SendAsync("ReceiveMessage", $"{userName} has left the room.");
+            await Clients.Group(roomName).SendAsync("Leaveroom", userName);
+            await _roomService.LeaveRoomAsync(roomName, userName, Context.ConnectionId);
         }
         public async Task SubmitVote(string roomName, string userName, string vote)
         {
@@ -103,23 +94,16 @@ namespace PlanningPoker.Hubs
         }
         public override async Task OnDisconnectedAsync(Exception? exception)
         {
-            foreach (var (roomName, users) in RoomUsers)
-            {
-                lock (users)
-                {
-                    if (UserConnections.TryGetValue(Context.ConnectionId, out var userName))
-                    {
-                        users.Remove(userName);
-                        UserConnections.TryRemove(Context.ConnectionId, out _);
+            var user = await _userService.GetUserByConnectionId(Context.ConnectionId);
+            var usersInroom = await _roomService.GetUsersInRoomByConnectionAsync(Context.ConnectionId);
 
-                        // Notify the room about the user leaving
-                        Clients.Group(roomName).SendAsync("UserLeft", userName);
-                    }
-                    if (!users.Any())
-                    {
-                        RoomUsers.TryRemove(roomName, out _);
-                    }
+            if (user != null)
+            {
+                if (usersInroom.Any())
+                {
+                    Clients.Group(usersInroom.FirstOrDefault().Room.Name).SendAsync("Leaveroom", user.Name);
                 }
+                await _roomService.LeaveRoomAsync(user.Name, Context.ConnectionId);
             }
 
             await base.OnDisconnectedAsync(exception);

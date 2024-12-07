@@ -113,6 +113,12 @@ connection.start().then(function () {
    return console.error(err.toString());
 });
 
+connection.on("Leaveroom", (userName) => {
+    //TODO: remove user from list of users
+    var badgeId = "userThumbnail_" + userName + currentRoom;
+    const badge = document.getElementById(badgeId);
+    badge.remove();
+});
 voteButtons.forEach(button => {
     button.addEventListener("click", async () => {
         const vote = button.getAttribute("data-value");
@@ -192,3 +198,12 @@ function clearVotesForRoom(roomName) {
         roomVotes.get(roomName).clear();
     }
 }
+
+window.addEventListener("beforeunload", async () => {
+    try {
+        await connection.stop();
+        console.log("Disconnected from SignalR hub due to browser/tab close");
+    } catch (err) {
+        console.error("Error during SignalR disconnection:", err);
+    }
+});
