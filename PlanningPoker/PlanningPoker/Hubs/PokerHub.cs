@@ -78,10 +78,14 @@ namespace PlanningPoker.Hubs
             List<int> intVotes = new List<int>();
             foreach (string str in votes)
             {
-                if (int.TryParse(str, out int val))
+                if (str != "coffee" || str != "question" || str != "infinity")
                 {
-                    intVotes.Add(val);
+                    if (int.TryParse(str, out int val))
+                    {
+                        intVotes.Add(val);
+                    }
                 }
+
             }
             var avarageVotes = intVotes.Sum() / userVoted.Count();
 

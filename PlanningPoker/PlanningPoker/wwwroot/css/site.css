@@ -161,6 +161,15 @@ body {
     background-color: #6c757d52 !important;
 }
 .vote {
+    background-color: #f8f9fa !important;
+    border-color: #cad6e1 !important;
+}
+.vote:hover {
     background-color: #d4e6f8 !important;
     border-color: #cad6e1 !important;
+}
+.share-tech-mono-regular {
+    font-family: "Share Tech Mono", monospace;
+    font-weight: 400;
+    font-style: normal;
 }
