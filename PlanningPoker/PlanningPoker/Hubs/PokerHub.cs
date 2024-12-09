@@ -87,9 +87,9 @@ namespace PlanningPoker.Hubs
                 }
 
             }
-            var avarageVotes = intVotes.Sum() / userVoted.Count();
+            var avarageVotes = intVotes.Sum() / intVotes.Count();
 
-            await Clients.Group(roomName).SendAsync("ReceiveAvarageVote", avarageVotes);
+            await Clients.Group(roomName).SendAsync("ReceiveAvarageVote", Math.Ceiling((decimal)avarageVotes));
         }
         public async Task ResetVotes(string roomName)
         {

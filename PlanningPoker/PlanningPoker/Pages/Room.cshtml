@@ -18,7 +18,9 @@
 
     if (cookieUserName != null)
     {
-        userName = cookieUserName;
+        //uri decode the cookie value
+
+        userName = Uri.UnescapeDataString(cookieUserName);
     }
     else
     {

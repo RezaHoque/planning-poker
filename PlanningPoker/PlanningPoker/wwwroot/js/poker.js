@@ -37,7 +37,7 @@ connection.on("ReceiveUserList", (userList) => {
     });
 });
 connection.on("ReceiveVote", function (user, vote) {
-    var badgeId = "userBadge" + user + currentRoom;
+    var badgeId = "userBadge" + getReplacedStr(user) + currentRoom;
     const badge = document.getElementById(badgeId);
     badge.innerHTML = '<i class="bi bi-check-circle fs-5"></i>';
     badge.className = "badge bg-success";
@@ -53,12 +53,18 @@ connection.on("ReceiveAvarageVote", function (avarage) {
     avarageVotebadge.className = "badge bg-light text-center";
     avarageVotebadge.style.top = "10px";
     avarageVotebadge.style.left = "50%";
-    avarageVotebadge.style.color = "black";
+    if (avarage <= 8) {
+        avarageVotebadge.style.color = "#198754";
+    } else {
+        avarageVotebadge.style.color = "#dc3545";
+    }
+    
     avarageVotebadge.style.minWidth = "60px";
     avarageVotebadge.style.height = "60px";
     avarageVotebadge.style.lineHeight = "30px";
     avarageVotebadge.style.borderRadius = "20%";
     avarageVotebadge.style.fontSize = "35px";
+    avarageVotebadge.style.border = "1px solid #e9ecef";
     avarageVotebadge.textContent = avarage;
 
     avarageVoteContainer.innerHTML = "";
@@ -67,7 +73,7 @@ connection.on("ReceiveAvarageVote", function (avarage) {
     const votes = getVotesForRoom(currentRoom);
 
     votes.forEach((vote, userName) => {
-        var badgeId = "userBadge" + userName + currentRoom;
+        var badgeId = "userBadge" + getReplacedStr(userName) + currentRoom;
         const badge = document.querySelector(`#${badgeId}`);
         console.log(badgeId);
         if (badge) {
@@ -106,7 +112,7 @@ connection.on("ClearVotes", () => {
     const avarageVotebadge = document.getElementById(avarageVoteBadge);
 
     votes.forEach((vote, userName) => {
-        var badgeId = "userBadge" + userName + currentRoom;
+        var badgeId = "userBadge" + getReplacedStr(userName) + currentRoom;
         const badge = document.querySelector(`#${badgeId}`);
         console.log(badgeId);
         if (badge) {
@@ -117,12 +123,15 @@ connection.on("ClearVotes", () => {
         }
     });
     avarageVoteContainer.innerHTML = "";
+    clearVotesForRoom(currentRoom);
+
 });
 connection.start().then(function () {
     currentRoom = roomName.value;
     currentUser = userName.value;
     navUserName.textContent = currentUser;
-    var badgeId = "userBadge" + currentUser + currentRoom;
+
+    var badgeId = "userBadge" + getReplacedStr(currentUser) + currentRoom;
     connection.invoke("JoinRoom", currentRoom, currentUser).catch(function (err) {
         return console.error(err.toString());
     });
@@ -131,14 +140,14 @@ connection.start().then(function () {
 });
 
 connection.on("Leaveroom", (userName) => {
-    var badgeId = "userThumbnail_" + userName + currentRoom;
+    var badgeId = "userThumbnail_" + getReplacedStr(userName) + currentRoom;
     const badge = document.getElementById(badgeId);
     badge.remove();
 });
 voteButtons.forEach(button => {
     button.addEventListener("click", async () => {
         const vote = button.getAttribute("data-value");
-        var badgeId = "userBadge" + currentUser + currentRoom;
+        var badgeId = "userBadge" + getReplacedStr(currentUser) + currentRoom;
         const badge = document.getElementById(badgeId);
       
         badge.dataset.vote = vote;
@@ -162,9 +171,10 @@ revealVotesButton.addEventListener("click", async () => {
 
 function createUserThumbnail(user, avatarUrl) {
     // Create a container div for the thumbnail
+    const userStr = getReplacedStr(user);
     const thumbnailDiv = document.createElement("div");
     thumbnailDiv.className = "thumbnail text-center";
-    thumbnailDiv.id = "userThumbnail_" + user + currentRoom;
+    thumbnailDiv.id = "userThumbnail_" + userStr + currentRoom;
 
     // Create the badge
     const badge = document.createElement("span");
@@ -178,7 +188,7 @@ function createUserThumbnail(user, avatarUrl) {
     badge.style.borderRadius = "30%"; 
     badge.textContent = "0"; 
     badge.style.fontSize = "25px";
-    badge.id = "userBadge" + user + currentRoom;
+    badge.id = "userBadge" + userStr + currentRoom;
 
     // Create an image element
     const img = document.createElement("img");
@@ -204,7 +214,10 @@ function addVote(roomName, userName, vote) {
         roomVotes.set(roomName, new Map());
     }
     const votes = roomVotes.get(roomName);
-    votes.set(userName, vote);
+    if (vote != "coffee" || vote != "infinity" || vote != "question") {
+        votes.set(userName, vote);
+    }
+    
 }
 function getVotesForRoom(roomName) {
     return roomVotes.get(roomName) || new Map();
@@ -213,6 +226,11 @@ function clearVotesForRoom(roomName) {
     if (roomVotes.has(roomName)) {
         roomVotes.get(roomName).clear();
     }
+    votes = [];
+}
+
+function getReplacedStr(inputStr) {
+    return inputStr.replace(/[^a-zA-Z0-9]/g, '');
 }
 
 window.addEventListener("beforeunload", async () => {

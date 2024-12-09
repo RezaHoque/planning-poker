@@ -42,7 +42,7 @@ document.addEventListener("DOMContentLoaded", function () {
     function getCookie(name) {
         const value = `; ${document.cookie}`;
         const parts = value.split(`; ${name}=`);
-        if (parts.length === 2) return parts.pop().split(';').shift();
+        if (parts.length === 2) return decodeURIComponent(parts.pop().split(';').shift());
         return null;
     } 
 
@@ -54,6 +54,7 @@ document.addEventListener("DOMContentLoaded", function () {
         const date = new Date();
         date.setTime(date.getTime() + days * 24 * 60 * 60 * 1000); // Days to milliseconds
         const expires = "expires=" + date.toUTCString();
-        document.cookie = `${name}=${value}; ${expires}; path=/`;
+        const safeCookievalue = encodeURIComponent(value).replace(/%(23|24|26|2B|5E|60|7C)/g, decodeURIComponent);
+        document.cookie = `${name}=${safeCookievalue}; ${expires}; path=/`;
     }
 });
