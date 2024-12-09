@@ -173,3 +173,46 @@ body {
     font-weight: 400;
     font-style: normal;
 }
+/* Container Styling */
+.instruction-container {
+    background-color: #f9f9f9; /* Light background for contrast */
+    border: 1px solid #e0e0e0; /* Subtle border */
+    border-radius: 8px; /* Rounded corners */
+    padding: 20px; /* Spacing inside the container */
+    max-width: 500px; /* Limit width for readability */
+    margin: 20px auto; /* Center horizontally */
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+    font-family: 'Arial', sans-serif; /* Clean font */
+}
+
+    /* Heading Styling */
+    .instruction-container h2 {
+        font-size: 1.5rem; /* Larger size for emphasis */
+        font-weight: bold;
+        color: #333; /* Darker color for contrast */
+        margin-bottom: 10px;
+        text-align: center; /* Center-align the heading */
+    }
+
+    /* Text Styling */
+    .instruction-container p {
+        font-size: 1rem; /* Standard text size */
+        color: #555; /* Soft gray color for readability */
+        line-height: 1.6; /* Improve text spacing */
+        text-align: center; /* Center-align for uniformity */
+        margin: 0;
+    }
+
+    /* Link or CTA Styling */
+    .instruction-container a {
+        display: block;
+        margin-top: 15px;
+        font-size: 1rem;
+        text-align: center;
+        color: #007bff; /* Blue link for visibility */
+        text-decoration: none;
+    }
+
+        .instruction-container a:hover {
+            text-decoration: underline; /* Indicate link interaction */
+        }
