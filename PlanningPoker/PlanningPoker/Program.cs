@@ -1,3 +1,5 @@
+using Microsoft.EntityFrameworkCore;
+using PlanningPoker.Data;
 using PlanningPoker.Hubs;
 using PlanningPoker.Services;
 
@@ -16,6 +18,8 @@ namespace PlanningPoker
             builder.Services.AddScoped<IroomService, RoomService>();
             builder.Services.AddScoped<IuserService, UserService>();
 
+            builder.Services.AddDbContext<PokerContext>();
+
 
             var app = builder.Build();
 
@@ -26,7 +30,11 @@ namespace PlanningPoker
                 // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
                 app.UseHsts();
             }
-
+            using (var scope = app.Services.CreateScope())
+            {
+                var dbContext = scope.ServiceProvider.GetRequiredService<PokerContext>();
+                dbContext.Database.Migrate();
+            }
             app.UseHttpsRedirection();
             app.UseStaticFiles();
 

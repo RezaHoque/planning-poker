@@ -11,11 +11,14 @@ namespace PlanningPoker.Data
         public DbSet<UserAvatar> UserAvatars { get; set; }
         public PokerContext()
         {
-            var folder = Environment.SpecialFolder.LocalApplicationData;
-            var path = Environment.GetFolderPath(folder);
-            DbPath = System.IO.Path.Join(path, "planningPoker.db");
+            var folder = Path.Combine(AppContext.BaseDirectory, "Database");
+            Directory.CreateDirectory(folder);
+            //Environment.SpecialFolder.LocalApplicationData;
+            //var path = Environment.GetFolderPath(folder);
+            DbPath = System.IO.Path.Join(folder, "planningPoker.db");
         }
         protected override void OnConfiguring(DbContextOptionsBuilder options) => options.UseSqlite($"Data Source={DbPath}");
+
     }
 
     public class User
