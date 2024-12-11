@@ -1,4 +1,5 @@
 ﻿
+using log4net;
 using Microsoft.EntityFrameworkCore;
 using PlanningPoker.Data;
 
@@ -8,10 +9,12 @@ namespace PlanningPoker.Services
     {
         private readonly PokerContext _dbContext;
         private readonly IConfiguration _configuration;
-        public AvatarService(IConfiguration configuration)
+        private readonly ILog _log;
+        public AvatarService(IConfiguration configuration, ILog log)
         {
             _dbContext = new PokerContext();
             _configuration = configuration;
+            _log = log;
         }
         public async Task<string> GetAvatar(string userName, string roomId)
         {
@@ -39,7 +42,7 @@ namespace PlanningPoker.Services
             }
             catch (Exception ex)
             {
-                //TODO: Log error
+                _log.Error($"Error getting avatar for {userName} in roomid {roomId}", ex);
                 return null;
 
             }

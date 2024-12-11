@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using PlanningPoker.Data;
+using PlanningPoker.Extensions;
 using PlanningPoker.Hubs;
 using PlanningPoker.Services;
 
@@ -19,6 +20,7 @@ namespace PlanningPoker
             builder.Services.AddScoped<IuserService, UserService>();
 
             builder.Services.AddDbContext<PokerContext>();
+            builder.Services.AddLog4net();
 
 
             var app = builder.Build();

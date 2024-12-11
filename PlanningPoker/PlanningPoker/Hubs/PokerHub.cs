@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.SignalR;
+﻿using log4net;
+using Microsoft.AspNetCore.SignalR;
 using PlanningPoker.Data;
 using PlanningPoker.Services;
 using System.Collections.Concurrent;
@@ -15,13 +16,17 @@ namespace PlanningPoker.Hubs
         private readonly PokerContext _dbContext;
         private readonly IroomService _roomService;
         private readonly IuserService _userService;
+        private readonly ILog _logger;
 
-        public PokerHub(IavatarService avatarService, IroomService roomService, IuserService userService)
+
+
+        public PokerHub(IavatarService avatarService, IroomService roomService, IuserService userService, ILog logger)
         {
             _avatarService = avatarService;
             _dbContext = new PokerContext();
             _roomService = roomService;
             _userService = userService;
+            _logger = logger;
         }
         public async Task SendMessage(string user, string message)
         {
@@ -31,7 +36,7 @@ namespace PlanningPoker.Hubs
         {
             // add user to db
             var room = await _roomService.GetOrCreateRoomAsync(roomName, userName);
-            var user = await _userService.GetOrCreateUserAsync(userName);
+            var user = await _userService.GetOrCreateUserAsync(userName, roomName);
 
             bool isNewUser = false;
             if (!await _roomService.UserExistsInRoom(roomName, userName))
@@ -60,6 +65,8 @@ namespace PlanningPoker.Hubs
                 }, userListWithAvatars);
             }
             await Clients.Caller.SendAsync("ReceiveUserList", userListWithAvatars);
+
+            _logger.Info($"{userName} has joined the room {roomName}.");
             //await Clients.OthersInGroup(roomName).SendAsync("UserJoined", $"{userName} has joined the room.");
         }
 
