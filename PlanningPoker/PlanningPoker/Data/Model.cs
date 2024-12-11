@@ -27,6 +27,7 @@ namespace PlanningPoker.Data
         public string Name { get; set; }
         public string Avatar { get; set; }
         public DateTime JoinDate { get; set; }
+        public string RoomName { get; set; }
 
     }
     public class Room

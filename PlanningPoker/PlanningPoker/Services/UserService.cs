@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using log4net;
+using Microsoft.EntityFrameworkCore;
 using PlanningPoker.Data;
 
 namespace PlanningPoker.Services
@@ -7,16 +8,18 @@ namespace PlanningPoker.Services
     {
         private readonly PokerContext _dbContext;
         private readonly IavatarService _avatarService;
-        public UserService(IavatarService avatarService)
+        private readonly ILog _log;
+        public UserService(IavatarService avatarService, ILog log)
         {
             _dbContext = new PokerContext();
             _avatarService = avatarService;
+            _log = log;
         }
-        public async Task<User> GetOrCreateUserAsync(string userName)
+        public async Task<User> GetOrCreateUserAsync(string userName, string roomName)
         {
             if (!string.IsNullOrEmpty(userName))
             {
-                var existingUser = await _dbContext.Users.FirstOrDefaultAsync(x => x.Name == userName);
+                var existingUser = await _dbContext.Users.FirstOrDefaultAsync(x => x.Name == userName && x.RoomName == roomName);
                 if (existingUser == null)
                 {
                     var newUser = new User
@@ -24,7 +27,8 @@ namespace PlanningPoker.Services
                         Id = Guid.NewGuid().ToString(),
                         Name = userName,
                         JoinDate = DateTime.Now,
-                        Avatar = string.Empty
+                        Avatar = string.Empty,
+                        RoomName = roomName
 
                     };
                     _dbContext.Users.Add(newUser);

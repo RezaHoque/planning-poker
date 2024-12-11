@@ -1,4 +1,5 @@
 ﻿
+using log4net;
 using Microsoft.EntityFrameworkCore;
 using PlanningPoker.Data;
 
@@ -9,18 +10,20 @@ namespace PlanningPoker.Services
         private readonly PokerContext _dbContext;
         private readonly IuserService _userService;
         private readonly IavatarService _avatarService;
-        public RoomService(IuserService userService, IavatarService avatarService)
+        private readonly ILog _log;
+        public RoomService(IuserService userService, IavatarService avatarService, ILog log)
         {
             _dbContext = new PokerContext();
             _userService = userService;
             _avatarService = avatarService;
+            _log = log;
         }
         public async Task<Room> GetOrCreateRoomAsync(string roomName, string userName)
         {
 
             if (!string.IsNullOrEmpty(roomName) && !string.IsNullOrEmpty(userName))
             {
-                var user = await _userService.GetOrCreateUserAsync(userName);
+                var user = await _userService.GetOrCreateUserAsync(userName, roomName);
 
                 var existingRoom = await _dbContext.Rooms.FirstOrDefaultAsync(x => x.Name == roomName);
                 if (existingRoom == null)
@@ -34,10 +37,12 @@ namespace PlanningPoker.Services
                     };
                     _dbContext.Rooms.Add(newRoom);
                     await _dbContext.SaveChangesAsync();
+                    _log.Info($"New Room {roomName} created by {user.Name}");
                     return newRoom;
                 }
                 return existingRoom;
             }
+            _log.Info("Room name or user name is empty");
             return null;
 
         }

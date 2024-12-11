@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using PlanningPoker.Data;
+using PlanningPoker.Extensions;
 using PlanningPoker.Hubs;
 using PlanningPoker.Services;
 
@@ -9,6 +10,12 @@ namespace PlanningPoker
     {
         public static void Main(string[] args)
         {
+            var logDirectory = Path.Combine(AppContext.BaseDirectory, "Logs");
+            if (!Directory.Exists(logDirectory))
+            {
+                Directory.CreateDirectory(logDirectory);
+            }
+
             var builder = WebApplication.CreateBuilder(args);
 
             // Add services to the container.
@@ -19,6 +26,7 @@ namespace PlanningPoker
             builder.Services.AddScoped<IuserService, UserService>();
 
             builder.Services.AddDbContext<PokerContext>();
+            builder.Services.AddLog4net();
 
 
             var app = builder.Build();
