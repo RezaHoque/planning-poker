@@ -10,6 +10,12 @@ namespace PlanningPoker
     {
         public static void Main(string[] args)
         {
+            var logDirectory = Path.Combine(AppContext.BaseDirectory, "Logs");
+            if (!Directory.Exists(logDirectory))
+            {
+                Directory.CreateDirectory(logDirectory);
+            }
+
             var builder = WebApplication.CreateBuilder(args);
 
             // Add services to the container.
