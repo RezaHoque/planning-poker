@@ -73,8 +73,9 @@ namespace PlanningPoker.Hubs
         public async Task LeaveRoom(string roomName, string userName)
         {
             await Groups.RemoveFromGroupAsync(Context.ConnectionId, roomName);
-            await Clients.Group(roomName).SendAsync("Leaveroom", userName);
             await _roomService.LeaveRoomAsync(roomName, userName, Context.ConnectionId);
+            await Clients.Group(roomName).SendAsync("Leaveroom", userName);
+
         }
         public async Task SubmitVote(string roomName, string userName, string vote)
         {

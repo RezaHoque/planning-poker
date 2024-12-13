@@ -84,18 +84,36 @@ namespace PlanningPoker.Services
 
         public async Task LeaveRoomAsync(string roomName, string userName, string connectionId)
         {
-            await deleteUserRoom(userName, roomName, connectionId);
-            await deleteAvatar(userName, roomName);
+            try
+            {
+                await DeleteUserRoom(userName, roomName, connectionId);
+                await DeleteAvatar(userName, roomName);
+                await DeleteUser(userName, roomName);
+            }
+            catch (Exception ex)
+            {
+                _log.Error($"Error leaving room {roomName} by {userName}. connectiod id: {connectionId}", ex);
+            }
+
         }
 
         public async Task LeaveRoomAsync(string userName, string connectionId)
         {
-            await deleteUserRoom(userName, connectionId);
-            var room = await _dbContext.UserRooms.Include(x => x.User).Include(x => x.Room).FirstOrDefaultAsync(x => x.ConnectionId == connectionId);
-            if (room != null)
+            try
             {
-                await deleteAvatar(userName, room.Room.Name);
+                var room = await _dbContext.UserRooms.Include(x => x.User).Include(x => x.Room).FirstOrDefaultAsync(x => x.ConnectionId == connectionId);
+                if (room != null)
+                {
+                    await DeleteUserRoom(userName, connectionId);
+                    await DeleteAvatar(userName, room.Room.Name);
+                    await DeleteUser(userName, room.Room.Name);
+                }
             }
+            catch (Exception ex)
+            {
+                _log.Error($"Error leaving room by {userName}. connectiod id: {connectionId}", ex);
+            }
+
         }
 
         public async Task<bool> UserExistsInRoom(string roomName, string userName)
@@ -106,32 +124,74 @@ namespace PlanningPoker.Services
         }
 
         #region private methods
-        private async Task deleteAvatar(string userName, string roomName)
+        private async Task DeleteAvatar(string userName, string roomName)
         {
-            var avatar = _dbContext.UserAvatars.FirstOrDefault(x => x.UserName == userName && x.RoomId == roomName);
-            if (avatar != null)
+            try
             {
-                _dbContext.UserAvatars.Remove(avatar);
-                await _dbContext.SaveChangesAsync();
+                var avatar = _dbContext.UserAvatars.FirstOrDefault(x => x.UserName == userName && x.RoomId == roomName);
+                if (avatar != null)
+                {
+                    _dbContext.UserAvatars.Remove(avatar);
+                    await _dbContext.SaveChangesAsync();
+                }
             }
+            catch (Exception ex)
+            {
+                _log.Error($"Error deleting avatar by {userName} and room name {roomName}", ex);
+            }
+
         }
-        private async Task deleteUserRoom(string userName, string roomName, string connectionId)
+        private async Task DeleteUserRoom(string userName, string roomName, string connectionId)
         {
-            var userRooms = _dbContext.UserRooms.Where(x => x.User.Name == userName && x.Room.Name == roomName && x.ConnectionId == connectionId).ToList();
-            if (userRooms.Count > 0)
+            try
             {
-                _dbContext.UserRooms.RemoveRange(userRooms);
-                await _dbContext.SaveChangesAsync();
+                var userRooms = _dbContext.UserRooms.Where(x => x.User.Name == userName && x.Room.Name == roomName && x.ConnectionId == connectionId).ToList();
+                if (userRooms.Count > 0)
+                {
+                    _dbContext.UserRooms.RemoveRange(userRooms);
+                    await _dbContext.SaveChangesAsync();
+                }
             }
+            catch (Exception ex)
+            {
+                _log.Error($"Error deleting user room by {userName} and room name {roomName} and connection id {connectionId}", ex);
+            }
+
         }
-        private async Task deleteUserRoom(string userName, string connectionId)
+        private async Task DeleteUserRoom(string userName, string connectionId)
         {
-            var userRooms = _dbContext.UserRooms.Where(x => x.User.Name == userName && x.ConnectionId == connectionId).ToList();
-            if (userRooms.Count > 0)
+            try
             {
-                _dbContext.UserRooms.RemoveRange(userRooms);
-                await _dbContext.SaveChangesAsync();
+                var userRooms = _dbContext.UserRooms.Where(x => x.User.Name == userName && x.ConnectionId == connectionId).ToList();
+                if (userRooms.Count > 0)
+                {
+                    _dbContext.UserRooms.RemoveRange(userRooms);
+                    await _dbContext.SaveChangesAsync();
+                }
             }
+            catch (Exception ex)
+            {
+                _log.Error($"Error deleting user room by {userName} and connection id {connectionId}", ex);
+            }
+
+        }
+
+        private async Task DeleteUser(string userName, string roomName)
+        {
+            try
+            {
+                var user = await _dbContext.Users.FirstOrDefaultAsync(x => x.Name == userName && x.RoomName == roomName);
+                if (user != null)
+                {
+                    _dbContext.Users.Remove(user);
+                    await _dbContext.SaveChangesAsync();
+                }
+            }
+            catch (Exception ex)
+            {
+                _log.Error($"Error deleting user by {userName} and room name {roomName}", ex);
+            }
+
         }
         #endregion
     }
