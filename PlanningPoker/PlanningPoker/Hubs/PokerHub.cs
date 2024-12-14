@@ -28,10 +28,10 @@ namespace PlanningPoker.Hubs
             _userService = userService;
             _logger = logger;
         }
-        public async Task SendMessage(string user, string message)
-        {
-            await Clients.All.SendAsync("ReceiveMessage", user, message);
-        }
+        //public async Task SendMessage(string user, string message)
+        //{
+        //    await Clients.All.SendAsync("ReceiveMessage", user, message);
+        //}
         public async Task JoinRoom(string roomName, string userName)
         {
             // add user to db
@@ -73,35 +73,58 @@ namespace PlanningPoker.Hubs
         public async Task LeaveRoom(string roomName, string userName)
         {
             await Groups.RemoveFromGroupAsync(Context.ConnectionId, roomName);
-            await Clients.Group(roomName).SendAsync("Leaveroom", userName);
             await _roomService.LeaveRoomAsync(roomName, userName, Context.ConnectionId);
+            await Clients.Group(roomName).SendAsync("Leaveroom", userName);
+
         }
         public async Task SubmitVote(string roomName, string userName, string vote)
         {
+            await _roomService.AddRoomVotes(roomName, userName, vote);
             await Clients.Group(roomName).SendAsync("ReceiveVote", userName, vote);
         }
-        public async Task RevealVotes(string roomName, string[] userVoted, string[] votes)
+        public async Task RevealVotes(string roomName)
         {
-            List<int> intVotes = new List<int>();
-            foreach (string str in votes)
+            var avarageVotes = _roomService.CalculateAvarageRoomVotes(roomName);
+            var avarageFibonacciVotes = _roomService.CalculateAvarageFibRoomVotes(roomName);
+
+            var allUservotes = await _roomService.GetRoomVotesWithUsersAsync(roomName);
+            var votesWithUsers = allUservotes.Select(vote => new
             {
-                if (str != "coffee" || str != "question" || str != "infinity")
-                {
-                    if (int.TryParse(str, out int val))
-                    {
-                        intVotes.Add(val);
-                    }
-                }
+                vote = vote.Vote,
+                userName = vote.UserName
+            }).ToList();
 
-            }
-            var avarageVotes = intVotes.Sum() / intVotes.Count();
-
-            await Clients.Group(roomName).SendAsync("ReceiveAvarageVote", Math.Ceiling((decimal)avarageVotes));
+            //if (avarageVotes == null)
+            //{
+            //    await Clients.Group(roomName).SendAsync("ReceiveMessage", "No votes have been submitted.");
+            //    return;
+            //}
+            await Clients.Group(roomName).SendAsync("ReceiveAvarageVote", avarageVotes, avarageFibonacciVotes, votesWithUsers);
         }
         public async Task ResetVotes(string roomName)
         {
             //await Clients.Group(roomName).SendAsync("ReceiveMessage", "Votes have been cleared.");
-            await Clients.Group(roomName).SendAsync("ClearVotes");
+            var votes = await _roomService.GetRoomVotesWithUsersAsync(roomName);
+            var votesWithUsers = votes.Select(vote => new
+            {
+                vote = vote.Vote,
+                userName = vote.UserName
+            }).ToList();
+
+            await _roomService.RemoveRoomVotes(roomName);
+            await Clients.Group(roomName).SendAsync("ClearVotes", votesWithUsers);
+        }
+        public async Task<object> GetRoomVotesWithUsers(string roomName)
+        {
+            var votes = await _roomService.GetRoomVotesWithUsersAsync(roomName);
+            var votesWithUsers = votes.Select(vote => new
+            {
+                vote = vote.Vote,
+                userName = vote.UserName
+            }).ToList();
+
+            return votesWithUsers;
+            //await Clients.Caller.SendAsync("ReceiveRoomVotes", votesWithUsers);
         }
         public override async Task OnDisconnectedAsync(Exception? exception)
         {

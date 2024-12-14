@@ -84,18 +84,36 @@ namespace PlanningPoker.Services
 
         public async Task LeaveRoomAsync(string roomName, string userName, string connectionId)
         {
-            await deleteUserRoom(userName, roomName, connectionId);
-            await deleteAvatar(userName, roomName);
+            try
+            {
+                await DeleteUserRoom(userName, roomName, connectionId);
+                await DeleteAvatar(userName, roomName);
+                await DeleteUser(userName, roomName);
+            }
+            catch (Exception ex)
+            {
+                _log.Error($"Error leaving room {roomName} by {userName}. connectiod id: {connectionId}", ex);
+            }
+
         }
 
         public async Task LeaveRoomAsync(string userName, string connectionId)
         {
-            await deleteUserRoom(userName, connectionId);
-            var room = await _dbContext.UserRooms.Include(x => x.User).Include(x => x.Room).FirstOrDefaultAsync(x => x.ConnectionId == connectionId);
-            if (room != null)
+            try
             {
-                await deleteAvatar(userName, room.Room.Name);
+                var room = await _dbContext.UserRooms.Include(x => x.User).Include(x => x.Room).FirstOrDefaultAsync(x => x.ConnectionId == connectionId);
+                if (room != null)
+                {
+                    await DeleteUserRoom(userName, connectionId);
+                    await DeleteAvatar(userName, room.Room.Name);
+                    await DeleteUser(userName, room.Room.Name);
+                }
             }
+            catch (Exception ex)
+            {
+                _log.Error($"Error leaving room by {userName}. connectiod id: {connectionId}", ex);
+            }
+
         }
 
         public async Task<bool> UserExistsInRoom(string roomName, string userName)
@@ -106,33 +124,186 @@ namespace PlanningPoker.Services
         }
 
         #region private methods
-        private async Task deleteAvatar(string userName, string roomName)
+        private async Task DeleteAvatar(string userName, string roomName)
         {
-            var avatar = _dbContext.UserAvatars.FirstOrDefault(x => x.UserName == userName && x.RoomId == roomName);
-            if (avatar != null)
+            try
             {
-                _dbContext.UserAvatars.Remove(avatar);
-                await _dbContext.SaveChangesAsync();
+                var avatar = _dbContext.UserAvatars.FirstOrDefault(x => x.UserName == userName && x.RoomId == roomName);
+                if (avatar != null)
+                {
+                    _dbContext.UserAvatars.Remove(avatar);
+                    await _dbContext.SaveChangesAsync();
+                }
             }
+            catch (Exception ex)
+            {
+                _log.Error($"Error deleting avatar by {userName} and room name {roomName}", ex);
+            }
+
         }
-        private async Task deleteUserRoom(string userName, string roomName, string connectionId)
+        private async Task DeleteUserRoom(string userName, string roomName, string connectionId)
         {
-            var userRooms = _dbContext.UserRooms.Where(x => x.User.Name == userName && x.Room.Name == roomName && x.ConnectionId == connectionId).ToList();
-            if (userRooms.Count > 0)
+            try
             {
-                _dbContext.UserRooms.RemoveRange(userRooms);
-                await _dbContext.SaveChangesAsync();
+                var userRooms = _dbContext.UserRooms.Where(x => x.User.Name == userName && x.Room.Name == roomName && x.ConnectionId == connectionId).ToList();
+                if (userRooms.Count > 0)
+                {
+                    _dbContext.UserRooms.RemoveRange(userRooms);
+                    await _dbContext.SaveChangesAsync();
+                }
             }
+            catch (Exception ex)
+            {
+                _log.Error($"Error deleting user room by {userName} and room name {roomName} and connection id {connectionId}", ex);
+            }
+
         }
-        private async Task deleteUserRoom(string userName, string connectionId)
+        private async Task DeleteUserRoom(string userName, string connectionId)
         {
-            var userRooms = _dbContext.UserRooms.Where(x => x.User.Name == userName && x.ConnectionId == connectionId).ToList();
-            if (userRooms.Count > 0)
+            try
             {
-                _dbContext.UserRooms.RemoveRange(userRooms);
-                await _dbContext.SaveChangesAsync();
+                var userRooms = _dbContext.UserRooms.Where(x => x.User.Name == userName && x.ConnectionId == connectionId).ToList();
+                if (userRooms.Count > 0)
+                {
+                    _dbContext.UserRooms.RemoveRange(userRooms);
+                    await _dbContext.SaveChangesAsync();
+                }
             }
+            catch (Exception ex)
+            {
+                _log.Error($"Error deleting user room by {userName} and connection id {connectionId}", ex);
+            }
+
+        }
+
+        private async Task DeleteUser(string userName, string roomName)
+        {
+            try
+            {
+                var user = await _dbContext.Users.FirstOrDefaultAsync(x => x.Name == userName && x.RoomName == roomName);
+                if (user != null)
+                {
+                    _dbContext.Users.Remove(user);
+                    await _dbContext.SaveChangesAsync();
+                }
+            }
+            catch (Exception ex)
+            {
+                _log.Error($"Error deleting user by {userName} and room name {roomName}", ex);
+            }
+
+        }
+        private static List<int> GenerateFibonacciSequence(int max)
+        {
+            var fibonacci = new List<int> { 1, 2 };
+            while (true)
+            {
+                var next = fibonacci[^1] + fibonacci[^2];
+                if (next > max) break;
+                fibonacci.Add(next);
+            }
+            return fibonacci;
+        }
+        private static int FindClosestFibonacci(int number, List<int> fibonacciNumbers)
+        {
+            int closest = fibonacciNumbers[0];
+            foreach (var fib in fibonacciNumbers)
+            {
+                if (Math.Abs(fib - number) < Math.Abs(closest - number))
+                {
+                    closest = fib;
+                }
+            }
+            return closest;
         }
         #endregion
+        public async Task AddRoomVotes(string roomName, string userName, string vote)
+        {
+            try
+            {
+                if (!string.IsNullOrEmpty(roomName) && !string.IsNullOrEmpty(userName) && !string.IsNullOrEmpty(vote))
+                {
+                    var existingVote = _dbContext.RoomVotes.FirstOrDefault(x => x.Room.Name == roomName && x.UserName == userName);
+                    if (existingVote != null)
+                    {
+                        existingVote.Vote = vote;
+                        _dbContext.RoomVotes.Update(existingVote);
+                        await _dbContext.SaveChangesAsync();
+                        return;
+                    }
+                    var roomVote = new RoomVote
+                    {
+                        RoomId = _dbContext.Rooms.FirstOrDefault(x => x.Name == roomName).Id,
+                        UserName = userName,
+                        Vote = vote,
+                        Id = Guid.NewGuid().ToString()
+                    };
+                    _dbContext.RoomVotes.Add(roomVote);
+                    await _dbContext.SaveChangesAsync();
+                }
+
+            }
+            catch (Exception ex)
+            {
+                _log.Error($"Error adding room votes by {userName} and room name {roomName} and vote {vote}", ex);
+            }
+
+        }
+
+        public async Task RemoveRoomVotes(string roomName)
+        {
+            try
+            {
+                if (!string.IsNullOrEmpty(roomName))
+                {
+                    var roomVotes = _dbContext.RoomVotes.Where(x => x.Room.Name == roomName).ToList();
+                    if (roomVotes.Count > 0)
+                    {
+                        _dbContext.RoomVotes.RemoveRange(roomVotes);
+                        await _dbContext.SaveChangesAsync();
+                    }
+                }
+
+            }
+            catch (Exception ex)
+            {
+                _log.Error($"Error removing room votes by room name {roomName}", ex);
+            }
+
+        }
+
+        public int? CalculateAvarageRoomVotes(string roomName)
+        {
+            var votes = _dbContext.RoomVotes.Where(x => x.Room.Name == roomName)
+                .AsEnumerable()
+                .Where(x => double.TryParse(x.Vote, out _))
+                .Select(x => double.Parse(x.Vote)).ToList();
+            if (votes.Count == 0)
+            {
+                return 0;
+            }
+            var avarage = votes.Average();
+            return (int)Math.Ceiling(avarage);
+        }
+
+        public int? CalculateAvarageFibRoomVotes(string roomName)
+        {
+            var votes = _dbContext.RoomVotes.Where(x => x.Room.Name == roomName)
+                .AsEnumerable()
+                .Where(x => double.TryParse(x.Vote, out _))
+                .Select(x => double.Parse(x.Vote)).ToList();
+            if (votes.Count == 0)
+            {
+                return 0;
+            }
+            var avarage = votes.Average();
+            return FindClosestFibonacci((int)Math.Ceiling(avarage), GenerateFibonacciSequence(1000));
+        }
+
+        public async Task<List<RoomVote>> GetRoomVotesWithUsersAsync(string roomName)
+        {
+            var results = await _dbContext.RoomVotes.Where(x => x.Room.Name == roomName).ToListAsync();
+            return results;
+        }
     }
 }
