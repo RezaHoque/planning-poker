@@ -9,6 +9,7 @@ namespace PlanningPoker.Data
         public DbSet<Room> Rooms { get; set; }
         public DbSet<UserRoom> UserRooms { get; set; }
         public DbSet<UserAvatar> UserAvatars { get; set; }
+        public DbSet<RoomVote> RoomVotes { get; set; }
         public PokerContext()
         {
             var folder = Path.Combine(AppContext.BaseDirectory, "Database");
@@ -52,6 +53,16 @@ namespace PlanningPoker.Data
         public string Avatar { get; set; }
         public DateTime CreateDate { get; set; } = DateTime.Now;
         public string RoomId { get; set; }
+    }
+    public class RoomVote
+    {
+        public string Id { get; set; }
+        public string RoomId { get; set; }
+        public Room Room { get; set; }
+        public string UserName { get; set; }
+        public string Vote { get; set; }
+        public DateTime CreateDate { get; set; } = DateTime.UtcNow;
+
     }
 
 }

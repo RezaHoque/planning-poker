@@ -193,6 +193,117 @@ namespace PlanningPoker.Services
             }
 
         }
+        private static List<int> GenerateFibonacciSequence(int max)
+        {
+            var fibonacci = new List<int> { 1, 2 };
+            while (true)
+            {
+                var next = fibonacci[^1] + fibonacci[^2];
+                if (next > max) break;
+                fibonacci.Add(next);
+            }
+            return fibonacci;
+        }
+        private static int FindClosestFibonacci(int number, List<int> fibonacciNumbers)
+        {
+            int closest = fibonacciNumbers[0];
+            foreach (var fib in fibonacciNumbers)
+            {
+                if (Math.Abs(fib - number) < Math.Abs(closest - number))
+                {
+                    closest = fib;
+                }
+            }
+            return closest;
+        }
         #endregion
+        public async Task AddRoomVotes(string roomName, string userName, string vote)
+        {
+            try
+            {
+                if (!string.IsNullOrEmpty(roomName) && !string.IsNullOrEmpty(userName) && !string.IsNullOrEmpty(vote))
+                {
+                    var existingVote = _dbContext.RoomVotes.FirstOrDefault(x => x.Room.Name == roomName && x.UserName == userName);
+                    if (existingVote != null)
+                    {
+                        existingVote.Vote = vote;
+                        _dbContext.RoomVotes.Update(existingVote);
+                        await _dbContext.SaveChangesAsync();
+                        return;
+                    }
+                    var roomVote = new RoomVote
+                    {
+                        RoomId = _dbContext.Rooms.FirstOrDefault(x => x.Name == roomName).Id,
+                        UserName = userName,
+                        Vote = vote,
+                        Id = Guid.NewGuid().ToString()
+                    };
+                    _dbContext.RoomVotes.Add(roomVote);
+                    await _dbContext.SaveChangesAsync();
+                }
+
+            }
+            catch (Exception ex)
+            {
+                _log.Error($"Error adding room votes by {userName} and room name {roomName} and vote {vote}", ex);
+            }
+
+        }
+
+        public async Task RemoveRoomVotes(string roomName)
+        {
+            try
+            {
+                if (!string.IsNullOrEmpty(roomName))
+                {
+                    var roomVotes = _dbContext.RoomVotes.Where(x => x.Room.Name == roomName).ToList();
+                    if (roomVotes.Count > 0)
+                    {
+                        _dbContext.RoomVotes.RemoveRange(roomVotes);
+                        await _dbContext.SaveChangesAsync();
+                    }
+                }
+
+            }
+            catch (Exception ex)
+            {
+                _log.Error($"Error removing room votes by room name {roomName}", ex);
+            }
+
+        }
+
+        public int? CalculateAvarageRoomVotes(string roomName)
+        {
+            var votes = _dbContext.RoomVotes.Where(x => x.Room.Name == roomName)
+                .AsEnumerable()
+                .Where(x => double.TryParse(x.Vote, out _))
+                .Select(x => double.Parse(x.Vote)).ToList();
+            if (votes.Count == 0)
+            {
+                return 0;
+            }
+            var avarage = votes.Average();
+            return (int)Math.Ceiling(avarage);
+        }
+
+        public int? CalculateAvarageFibRoomVotes(string roomName)
+        {
+            var votes = _dbContext.RoomVotes.Where(x => x.Room.Name == roomName)
+                .AsEnumerable()
+                .Where(x => double.TryParse(x.Vote, out _))
+                .Select(x => double.Parse(x.Vote)).ToList();
+            if (votes.Count == 0)
+            {
+                return 0;
+            }
+            var avarage = votes.Average();
+            return FindClosestFibonacci((int)Math.Ceiling(avarage), GenerateFibonacciSequence(1000));
+        }
+
+        public async Task<List<RoomVote>> GetRoomVotesWithUsersAsync(string roomName)
+        {
+            var results = await _dbContext.RoomVotes.Where(x => x.Room.Name == roomName).ToListAsync();
+            return results;
+        }
     }
 }

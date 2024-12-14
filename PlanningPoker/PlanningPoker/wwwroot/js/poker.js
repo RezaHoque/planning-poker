@@ -30,7 +30,7 @@ connection.on("UserJoined", function (newUser, userList) {
 
 connection.on("ReceiveUserList", (userList) => {
     votesList.innerHTML = "";
-    console.log(userList);
+
     userList.forEach(user => {
         const thumbnailDiv = createUserThumbnail(user.userName, user.avatar);
         votesList.appendChild(thumbnailDiv);
@@ -42,42 +42,25 @@ connection.on("ReceiveVote", function (user, vote) {
     badge.innerHTML = '<i class="bi bi-check-circle fs-5"></i>';
     badge.className = "badge bg-success";
     badge.style.fontSize = "18px"
-    votes.push(vote);
-    userVoted.push(user);
-    addVote(currentRoom, user, vote);
+    //votes.push(vote);
+   // userVoted.push(user);
+   // addVote(currentRoom, user, vote);
 });
-connection.on("ReceiveAvarageVote", function (avarage) {
- 
-    const avarageVotebadge = document.createElement("span");
-    avarageVotebadge.id = "avarageVoteBadge";
-    avarageVotebadge.className = "badge bg-light text-center";
-    avarageVotebadge.style.top = "10px";
-    avarageVotebadge.style.left = "50%";
-    if (avarage <= 8) {
-        avarageVotebadge.style.color = "#198754";
-    } else {
-        avarageVotebadge.style.color = "#dc3545";
-    }
-    
-    avarageVotebadge.style.minWidth = "60px";
-    avarageVotebadge.style.height = "60px";
-    avarageVotebadge.style.lineHeight = "30px";
-    avarageVotebadge.style.borderRadius = "20%";
-    avarageVotebadge.style.fontSize = "35px";
-    avarageVotebadge.style.border = "1px solid #e9ecef";
-    avarageVotebadge.textContent = avarage;
+connection.on("ReceiveAvarageVote", function (average, fibonacciNumber, allUservotes) {
 
+    var span = createAverageVoteBadge(average);
     avarageVoteContainer.innerHTML = "";
-    avarageVoteContainer.appendChild(avarageVotebadge);
+    avarageVoteContainer.appendChild(span);
 
-    const votes = getVotesForRoom(currentRoom);
+    //displaying each users vote.
+    const votes = allUservotes;
 
-    votes.forEach((vote, userName) => {
-        var badgeId = "userBadge" + getReplacedStr(userName) + currentRoom;
+    votes.forEach((vote) => {
+        
+        var badgeId = "userBadge" + getReplacedStr(vote.userName) + currentRoom;
         const badge = document.querySelector(`#${badgeId}`);
-        console.log(badgeId);
         if (badge) {
-            if (vote == "coffee") {
+            if (vote.vote == "coffee") {
                 badge.innerHTML = `
                     <svg xmlns = "http://www.w3.org/2000/svg" width = "24" height = "24" fill = "currentColor" class="bi bi-cup-hot-fill" viewBox = "0 0 16 16" >
                         <path fill - rule="evenodd" d = "M.5 6a.5.5 0 0 0-.488.608l1.652 7.434A2.5 2.5 0 0 0 4.104 16h5.792a2.5 2.5 0 0 0 2.44-1.958l.131-.59a3 3 0 0 0 1.3-5.854l.221-.99A.5.5 0 0 0 13.5 6zM13 12.5a2 2 0 0 1-.316-.025l.867-3.898A2.001 2.001 0 0 1 13 12.5" />
@@ -86,11 +69,11 @@ connection.on("ReceiveAvarageVote", function (avarage) {
 
                 badge.className = "badge bg-warning";
                 badge.style.fontSize = "18px";
-            } else if (vote == "question") {
+            } else if (vote.vote == "question") {
                 badge.innerHTML = '<i class="bi bi-patch-question fs-5"></i>';
                 badge.className = "badge bg-warning";
                 badge.style.fontSize = "18px"
-            } else if (vote == "infinity") {
+            } else if (vote.vote == "infinity") {
                 badge.innerHTML = `
                         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-infinity" viewBox="0 0 16 16">
                             <path d="M5.68 5.792 7.345 7.75 5.681 9.708a2.75 2.75 0 1 1 0-3.916ZM8 6.978 6.416 5.113l-.014-.015a3.75 3.75 0 1 0 0 5.304l.014-.015L8 8.522l1.584 1.865.014.015a3.75 3.75 0 1 0 0-5.304l-.014.015zm.656.772 1.663-1.958a2.75 2.75 0 1 1 0 3.916z" />
@@ -99,7 +82,7 @@ connection.on("ReceiveAvarageVote", function (avarage) {
                 badge.style.fontSize = "18px";
 
             } else {
-                badge.innerHTML = vote;
+                badge.innerHTML = vote.vote;
                 badge.className = "badge bg-success";
                 badge.style.fontSize = "22px";
             }
@@ -107,14 +90,14 @@ connection.on("ReceiveAvarageVote", function (avarage) {
     });
 
 });
-connection.on("ClearVotes", () => {
-    const votes = getVotesForRoom(currentRoom);
+connection.on("ClearVotes", function (allUserVotes) {
+    const votes = allUserVotes;
     const avarageVotebadge = document.getElementById(avarageVoteBadge);
 
-    votes.forEach((vote, userName) => {
-        var badgeId = "userBadge" + getReplacedStr(userName) + currentRoom;
+    votes.forEach((vote) => {
+        var badgeId = "userBadge" + getReplacedStr(vote.userName) + currentRoom;
         const badge = document.querySelector(`#${badgeId}`);
-        console.log(badgeId);
+
         if (badge) {
             badge.innerHTML = "";
             badge.textContent = "0";
@@ -123,7 +106,7 @@ connection.on("ClearVotes", () => {
         }
     });
     avarageVoteContainer.innerHTML = "";
-    clearVotesForRoom(currentRoom);
+   
 
 });
 connection.start().then(function () {
@@ -164,7 +147,7 @@ resetVotesButton.addEventListener("click", async () => {
 });
 
 revealVotesButton.addEventListener("click", async () => {
-    await connection.invoke("RevealVotes", currentRoom, userVoted, votes).catch(function (err) {
+    await connection.invoke("RevealVotes", currentRoom).catch(function (err) {
         return console.error(err.toString());
     });
 });
@@ -209,18 +192,25 @@ function createUserThumbnail(user, avatarUrl) {
 
     return thumbnailDiv;
 }
-function addVote(roomName, userName, vote) {
-    if (!roomVotes.has(roomName)) {
-        roomVotes.set(roomName, new Map());
-    }
-    const votes = roomVotes.get(roomName);
-    if (vote != "coffee" || vote != "infinity" || vote != "question") {
-        votes.set(userName, vote);
-    }
+//function addVote(roomName, userName, vote) {
+//    if (!roomVotes.has(roomName)) {
+//        roomVotes.set(roomName, new Map());
+//    }
+//    const votes = roomVotes.get(roomName);
+//    if (vote != "coffee" || vote != "infinity" || vote != "question") {
+//        votes.set(userName, vote);
+//    }
     
-}
+//}
 function getVotesForRoom(roomName) {
-    return roomVotes.get(roomName) || new Map();
+        connection.invoke("GetRoomVotesWithUsers", roomName)
+            .then(response => {
+                console.log(response);
+                return response;
+        })
+        .catch(err => {
+            console.error(err);
+        });
 }
 function clearVotesForRoom(roomName) {
     if (roomVotes.has(roomName)) {
@@ -241,3 +231,21 @@ window.addEventListener("beforeunload", async () => {
         console.error("Error during SignalR disconnection:", err);
     }
 });
+
+function createAverageVoteBadge(average) {
+    const avarageVotebadge = document.createElement("span");
+    avarageVotebadge.id = "avarageVoteBadge";
+    avarageVotebadge.className = "badge bg-light text-center";
+    avarageVotebadge.style.top = "10px";
+    avarageVotebadge.style.left = "50%";
+    avarageVotebadge.style.color = average <= 8 ? "#198754" : "#dc3545";
+    avarageVotebadge.style.minWidth = "60px";
+    avarageVotebadge.style.height = "60px";
+    avarageVotebadge.style.lineHeight = "30px";
+    avarageVotebadge.style.borderRadius = "20%";
+    avarageVotebadge.style.fontSize = "35px";
+    avarageVotebadge.style.border = "1px solid #e9ecef";
+    avarageVotebadge.textContent = average;
+
+    return avarageVotebadge;
+}
