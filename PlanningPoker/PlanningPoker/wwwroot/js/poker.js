@@ -176,7 +176,7 @@ function createUserThumbnail(user, avatarUrl) {
     // Create an image element
     const img = document.createElement("img");
     img.src = avatarUrl; // Set the avatar URL
-    img.className = "img-thumbnail";
+    img.className = "img-thumbnail shadow";
     img.style.width = "100px"; 
     img.style.height = "100px";
 
