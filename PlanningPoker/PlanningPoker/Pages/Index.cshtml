@@ -1,5 +1,7 @@
 ﻿@page
+@using PlanningPoker.Services
 @model IndexModel
+@inject InameService _nameService
 @{
     ViewData["Title"] = "Welcome";
     string roomId = string.Empty;
@@ -12,7 +14,7 @@
     }
     else
     {
-        roomId = Guid.NewGuid().ToString();
+        roomId = _nameService.GenerateName();//Guid.NewGuid().ToString();
     }
 }
 

@@ -124,6 +124,23 @@ namespace PlanningPoker.Services
         }
 
         #region private methods
+        private async Task DeleteRoom(string roomName)
+        {
+            try
+            {
+                var room = await _dbContext.Rooms.FirstOrDefaultAsync(x => x.Name == roomName);
+                if (room != null)
+                {
+                    _dbContext.Rooms.Remove(room);
+                    await _dbContext.SaveChangesAsync();
+                }
+            }
+            catch (Exception ex)
+            {
+                _log.Error($"Error deleting room by room name {roomName}", ex);
+            }
+
+        }
         private async Task DeleteAvatar(string userName, string roomName)
         {
             try
