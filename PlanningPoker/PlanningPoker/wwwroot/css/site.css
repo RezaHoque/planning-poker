@@ -64,6 +64,12 @@ body {
     top: 5px;
     left: 5px;
 }
+.button-54:hover {
+    text-decoration: none;
+    box-shadow: #fff 2px 2px 0 0, #000 2px 2px 0 1px;
+    transform: translate(1px, 1px);
+    background-color: #f2e9e9;
+}
 
 @media (min-width: 768px) {
     .button-54 {
@@ -91,6 +97,12 @@ body {
         box-shadow: 0px 0px 0px 0px;
         top: 5px;
         left: 5px;
+    }
+    .button-54-n:hover {
+        text-decoration: none;
+        box-shadow: #fff 2px 2px 0 0, #000 2px 2px 0 1px;
+        transform: translate(1px, 1px);
+        background-color: #f2e9e9;
     }
 
 @media (min-width: 768px) {
@@ -140,6 +152,9 @@ body {
 
 .button-50-l:hover {
     text-decoration: none;
+    box-shadow: #fff 2px 2px 0 0, #000 2px 2px 0 1px;
+    transform: translate(2px, 2px);
+    background-color: #424040;
 }
 
 .button-50-l:active {
