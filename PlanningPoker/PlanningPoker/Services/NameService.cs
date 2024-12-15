@@ -1,6 +1,7 @@
 ﻿
 using log4net;
 using PlanningPoker.Data;
+using System.Text;
 using System.Text.Json;
 
 namespace PlanningPoker.Services
@@ -77,14 +78,28 @@ namespace PlanningPoker.Services
             var items = categories[randomCategory];
             string randomItem = items[random.Next(items.Count)];
 
-            var name = $"{randomAdjective}-{randomItem}";
+            var name = $"{randomAdjective}-{randomItem}-{GenerateRandomString()}";
             if (!IsNameUnique(name))
             {
                 // add a random number to the end of the name
                 return $"{name}-{random.Next(1000)}";
             }
 
-            return $"{randomAdjective}-{randomItem}";
+            return name;
+        }
+        private string GenerateRandomString(int length = 10)
+        {
+            const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+            var random = new Random();
+            var stringBuilder = new StringBuilder();
+
+            for (int i = 0; i < length; i++)
+            {
+                char randomChar = chars[random.Next(chars.Length)];
+                stringBuilder.Append(randomChar);
+            }
+
+            return stringBuilder.ToString();
         }
         #endregion
     }
