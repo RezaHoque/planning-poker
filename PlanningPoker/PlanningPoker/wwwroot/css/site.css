@@ -183,6 +183,11 @@ body {
     background-color: #d4e6f8 !important;
     border-color: #cad6e1 !important;
 }
+.voteHighlight {
+    background-color: #399ec382 !important;
+    border-color: #7186a04d !important;
+    color: #fff;
+}
 .share-tech-mono-regular {
     font-family: "Share Tech Mono", monospace;
     font-weight: 400;
@@ -212,5 +217,3 @@ ul {
             font-size: 18px; 
             color: #2e384252; 
         }
-        
-

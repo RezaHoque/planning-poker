@@ -42,15 +42,20 @@ connection.on("ReceiveVote", function (user, vote) {
     badge.innerHTML = '<i class="bi bi-check-circle fs-5"></i>';
     badge.className = "badge bg-success";
     badge.style.fontSize = "18px"
-    //votes.push(vote);
-   // userVoted.push(user);
-   // addVote(currentRoom, user, vote);
+
 });
 connection.on("ReceiveAvarageVote", function (average, fibonacciNumber, allUservotes) {
 
-    var span = createAverageVoteBadge(average);
+    var span = createAverageVoteBadge(average,"avarageVoteBadge");
     avarageVoteContainer.innerHTML = "";
     avarageVoteContainer.appendChild(span);
+
+    voteButtons.forEach(button => {
+        if (parseInt(button.getAttribute('data-value')) === fibonacciNumber) {
+            button.classList.remove('vote');
+            button.classList.add('voteHighlight');
+        }
+    });
 
     //displaying each users vote.
     const votes = allUservotes;
@@ -106,6 +111,13 @@ connection.on("ClearVotes", function (allUserVotes) {
         }
     });
     avarageVoteContainer.innerHTML = "";
+
+    const voteHighlightButtons = document.querySelectorAll(".voteHighlight");
+    voteHighlightButtons.forEach(button => {
+
+        button.classList.remove('voteHighlight');
+        button.classList.add('vote');
+    });
    
 
 });
@@ -192,16 +204,6 @@ function createUserThumbnail(user, avatarUrl) {
 
     return thumbnailDiv;
 }
-//function addVote(roomName, userName, vote) {
-//    if (!roomVotes.has(roomName)) {
-//        roomVotes.set(roomName, new Map());
-//    }
-//    const votes = roomVotes.get(roomName);
-//    if (vote != "coffee" || vote != "infinity" || vote != "question") {
-//        votes.set(userName, vote);
-//    }
-    
-//}
 function getVotesForRoom(roomName) {
         connection.invoke("GetRoomVotesWithUsers", roomName)
             .then(response => {
@@ -232,18 +234,18 @@ window.addEventListener("beforeunload", async () => {
     }
 });
 
-function createAverageVoteBadge(average) {
+function createAverageVoteBadge(average,id) {
     const avarageVotebadge = document.createElement("span");
-    avarageVotebadge.id = "avarageVoteBadge";
+    avarageVotebadge.id = id;
     avarageVotebadge.className = "badge bg-light text-center";
     avarageVotebadge.style.top = "10px";
     avarageVotebadge.style.left = "50%";
     avarageVotebadge.style.color = average <= 8 ? "#198754" : "#dc3545";
-    avarageVotebadge.style.minWidth = "60px";
-    avarageVotebadge.style.height = "60px";
-    avarageVotebadge.style.lineHeight = "30px";
+    avarageVotebadge.style.minWidth = "70px";
+    avarageVotebadge.style.height = "70px";
+    avarageVotebadge.style.lineHeight = "35px";
     avarageVotebadge.style.borderRadius = "20%";
-    avarageVotebadge.style.fontSize = "35px";
+    avarageVotebadge.style.fontSize = "40px";
     avarageVotebadge.style.border = "1px solid #e9ecef";
     avarageVotebadge.textContent = average;
 
