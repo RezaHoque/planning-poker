@@ -24,6 +24,7 @@ namespace PlanningPoker
             builder.Services.AddScoped<IavatarService, AvatarService>();
             builder.Services.AddScoped<IroomService, RoomService>();
             builder.Services.AddScoped<IuserService, UserService>();
+            builder.Services.AddScoped<InameService, NameService>();
 
             builder.Services.AddDbContext<PokerContext>();
             builder.Services.AddLog4net();
