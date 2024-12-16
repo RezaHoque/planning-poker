@@ -1,8 +1,14 @@
 ﻿@page "{roomId}"
+@using PlanningPoker.Services
+@using System.Web
+@inject IuserService _userService
+@inject InameService _nameService
+
 
 @{
     ViewData["Title"] = "Poker room";
     string userName = string.Empty;
+    string userNameUnesp = string.Empty;
     var cookieUserName = Request.Cookies["userName"];
 
     var roomName = string.Empty;
@@ -18,9 +24,22 @@
 
     if (cookieUserName != null)
     {
-        //uri decode the cookie value
 
-        userName = Uri.UnescapeDataString(cookieUserName);
+        //uri decode the cookie value
+        userName = await _userService.CheckAndGetUserName(cookieUserName, roomName);
+
+        if(!cookieUserName.Equals(userName, StringComparison.OrdinalIgnoreCase))
+        {
+            //update cookie.
+            if (Request.Cookies.TryGetValue("userName", out var cookieValue))
+            {
+                Response.Cookies.Append("userName", userName, new CookieOptions
+                {
+                    Expires = DateTimeOffset.UtcNow.AddDays(1)
+                });
+            }
+        }
+        userNameUnesp = Uri.UnescapeDataString(userName);
     }
     else
     {
@@ -34,7 +53,7 @@
     <div class="text-center">
 
         <input type="hidden" id="roomName" value="@roomName"/>
-        <input type="hidden" id="userName" value="@userName" />
+        <input type="hidden" id="userName" value="@userNameUnesp" />
     </div>
   
     <div class="text-center">
