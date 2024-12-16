@@ -19,7 +19,12 @@ namespace PlanningPoker.Services
         }
         public string GenerateName()
         {
-            return GenerateRandomName();
+            return GenerateRandomRoomName();
+        }
+
+        public string GenerateUserName()
+        {
+            return GenerateRandomName("-");
         }
 
         public bool IsNameUnique(string name)
@@ -48,7 +53,33 @@ namespace PlanningPoker.Services
             }
             return categories;
         }
-        public string GenerateRandomName()
+        private string GenerateRandomRoomName()
+        {
+            var name = $"{GenerateRandomName("-")}-{GenerateRandomString()}";
+            Random random = new Random();
+            if (!IsNameUnique(name))
+            {
+                // add a random number to the end of the name
+                return $"{name}-{random.Next(1000)}";
+            }
+
+            return name;
+        }
+        private string GenerateRandomString(int length = 10)
+        {
+            const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+            var random = new Random();
+            var stringBuilder = new StringBuilder();
+
+            for (int i = 0; i < length; i++)
+            {
+                char randomChar = chars[random.Next(chars.Length)];
+                stringBuilder.Append(randomChar);
+            }
+
+            return stringBuilder.ToString();
+        }
+        private string GenerateRandomName(string separatot)
         {
             var categories = LoadCategories();
             Random random = new Random();
@@ -78,28 +109,10 @@ namespace PlanningPoker.Services
             var items = categories[randomCategory];
             string randomItem = items[random.Next(items.Count)];
 
-            var name = $"{randomAdjective}-{randomItem}-{GenerateRandomString()}";
-            if (!IsNameUnique(name))
-            {
-                // add a random number to the end of the name
-                return $"{name}-{random.Next(1000)}";
-            }
+
+            var name = $"{randomAdjective}{separatot}{randomItem}";
 
             return name;
-        }
-        private string GenerateRandomString(int length = 10)
-        {
-            const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-            var random = new Random();
-            var stringBuilder = new StringBuilder();
-
-            for (int i = 0; i < length; i++)
-            {
-                char randomChar = chars[random.Next(chars.Length)];
-                stringBuilder.Append(randomChar);
-            }
-
-            return stringBuilder.ToString();
         }
         #endregion
     }

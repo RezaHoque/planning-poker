@@ -6,6 +6,7 @@ namespace PlanningPoker.Services
     {
         Task<User> GetOrCreateUserAsync(string userName, string roomName);
         Task<User> GetUserByConnectionId(string connectionId);
+        Task<string> CheckAndGetUserName(string userName, string roomName);
 
     }
 }

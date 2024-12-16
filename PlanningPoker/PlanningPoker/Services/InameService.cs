@@ -4,5 +4,6 @@
     {
         string GenerateName();
         bool IsNameUnique(string name);
+        string GenerateUserName();
     }
 }
