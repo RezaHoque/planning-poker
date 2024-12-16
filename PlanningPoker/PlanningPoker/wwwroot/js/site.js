@@ -24,7 +24,11 @@ document.addEventListener("DOMContentLoaded", function () {
         joinRoomBtn.addEventListener("click", function () {
             const userName = document.getElementById("userName").value;
             const roomId = document.getElementById("roomId").value;
+            const honeyPot = document.getElementById("trapField").value;
 
+            if (honeyPot) {
+                return;
+            }
             if (!userName) {
                 alert("Please enter your name!");
                 return;
