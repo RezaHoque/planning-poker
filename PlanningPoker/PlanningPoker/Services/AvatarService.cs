@@ -26,8 +26,7 @@ namespace PlanningPoker.Services
                     return avatar.Avatar;
                 }
 
-                var avatarApiEndpoint = _configuration["Api:Avatar:BaseUrl"];
-                var userAvaratUrl = $"{avatarApiEndpoint}{userName}.png";
+                var userAvaratUrl = GetAvatarApiEndpoint(userName);
 
                 var userAvatar = new UserAvatar
                 {
@@ -53,5 +52,51 @@ namespace PlanningPoker.Services
         {
             throw new NotImplementedException();
         }
+
+        private Dictionary<string, string> GetAvatarApiSettings()
+        {
+            var apiSettings = new Dictionary<string, string>();
+
+            var apiSection = _configuration.GetSection("Api");
+
+            foreach (var avatarType in apiSection.GetChildren())
+            {
+                foreach (var avatarConfig in avatarType.GetChildren())
+                {
+                    var baseUrl = avatarConfig.GetSection("BaseUrl").Value;
+                    if (!string.IsNullOrEmpty(baseUrl))
+                    {
+                        apiSettings[$"{avatarType.Key}:{avatarConfig.Key}"] = baseUrl;
+                    }
+                }
+            }
+
+            return apiSettings;
+        }
+        private string GetAvatarApiEndpoint(string userName)
+        {
+            var apiSettings = GetAvatarApiSettings();
+            var random = new Random();
+            var apiIndex = random.Next(0, apiSettings.Count);
+            var selectedSettings = apiSettings.ElementAt(apiIndex);
+
+            if (selectedSettings.Key == "Robohash")
+            {
+                return $"{selectedSettings.Value}{userName}?set=set3";
+            }
+            else if (selectedSettings.Key == "DiceBear")
+            {
+                return $"{selectedSettings.Value}{userName}";
+            }
+            else
+            {
+                return $"{selectedSettings.Value}{userName}.png";
+            }
+
+
+
+
+        }
+
     }
 }
