@@ -64,5 +64,14 @@ namespace PlanningPoker.Data
         public DateTime CreateDate { get; set; } = DateTime.UtcNow;
 
     }
+    public class GifResponse
+    {
+        public List<GifData> Data { get; set; }
+    }
+    public class GifData
+    {
+        public string Id { get; set; }
+        public string Url { get; set; }
+    }
 
 }

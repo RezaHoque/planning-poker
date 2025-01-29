@@ -25,6 +25,7 @@ namespace PlanningPoker
             builder.Services.AddScoped<IroomService, RoomService>();
             builder.Services.AddScoped<IuserService, UserService>();
             builder.Services.AddScoped<InameService, NameService>();
+            builder.Services.AddScoped<IgifService, GifService>();
 
             builder.Services.AddDbContext<PokerContext>();
             builder.Services.AddLog4net();
@@ -53,6 +54,7 @@ namespace PlanningPoker
 
             app.MapRazorPages();
             app.MapHub<PokerHub>("/pokerHub");
+            app.MapControllers();
 
             app.Run();
         }

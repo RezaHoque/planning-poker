@@ -10,6 +10,7 @@ const voteButtons = document.querySelectorAll(".vote");
 const resetVotesButton = document.getElementById("resetVotes");
 const revealVotesButton = document.getElementById("revealVotes");
 const navUserName = document.getElementById("navUserName");
+const reactionDiv = document.getElementById("reaction");
 
 let currentRoom = "";
 let currentUser = "";
@@ -44,7 +45,7 @@ connection.on("ReceiveVote", function (user, vote) {
     badge.style.fontSize = "18px"
 
 });
-connection.on("ReceiveAvarageVote", function (average, fibonacciNumber, allUservotes) {
+connection.on("ReceiveAvarageVote", function (average, fibonacciNumber, allUservotes, gifUrl) {
 
     var span = createAverageVoteBadge(average,"avarageVoteBadge");
     avarageVoteContainer.innerHTML = "";
@@ -94,6 +95,8 @@ connection.on("ReceiveAvarageVote", function (average, fibonacciNumber, allUserv
         }
     });
 
+    
+    reactionDiv.innerHTML = `<img src="${gifUrl}" alt="reaction gif" style="max-width:300px; height:300px;" />`;
 });
 connection.on("ClearVotes", function (allUserVotes) {
     const votes = allUserVotes;
@@ -111,6 +114,7 @@ connection.on("ClearVotes", function (allUserVotes) {
         }
     });
     avarageVoteContainer.innerHTML = "";
+    reactionDiv.innerHTML = "";
 
     const voteHighlightButtons = document.querySelectorAll(".voteHighlight");
     voteHighlightButtons.forEach(button => {
@@ -139,6 +143,7 @@ connection.on("Leaveroom", (userName) => {
     const badge = document.getElementById(badgeId);
     badge.remove();
 });
+
 voteButtons.forEach(button => {
     button.addEventListener("click", async () => {
         const vote = button.getAttribute("data-value");
@@ -154,8 +159,6 @@ resetVotesButton.addEventListener("click", async () => {
     await connection.invoke("ResetVotes", currentRoom).catch(function (err) {
         return console.error(err.toString());
     });
-    
-   
 });
 
 revealVotesButton.addEventListener("click", async () => {

@@ -17,16 +17,18 @@ namespace PlanningPoker.Hubs
         private readonly IroomService _roomService;
         private readonly IuserService _userService;
         private readonly ILog _logger;
+        private readonly IgifService _gifService;
 
 
 
-        public PokerHub(IavatarService avatarService, IroomService roomService, IuserService userService, ILog logger)
+        public PokerHub(IavatarService avatarService, IroomService roomService, IuserService userService, ILog logger, IgifService gifService)
         {
             _avatarService = avatarService;
             _dbContext = new PokerContext();
             _roomService = roomService;
             _userService = userService;
             _logger = logger;
+            _gifService = gifService;
         }
         //public async Task SendMessage(string user, string message)
         //{
@@ -94,12 +96,10 @@ namespace PlanningPoker.Hubs
                 userName = vote.UserName
             }).ToList();
 
-            //if (avarageVotes == null)
-            //{
-            //    await Clients.Group(roomName).SendAsync("ReceiveMessage", "No votes have been submitted.");
-            //    return;
-            //}
-            await Clients.Group(roomName).SendAsync("ReceiveAvarageVote", avarageVotes, avarageFibonacciVotes, votesWithUsers);
+            var numberForGif = avarageFibonacciVotes > 0 ? avarageFibonacciVotes : 0;
+            var gifUrl = await _gifService.GetGif(numberForGif.ToString());
+
+            await Clients.Group(roomName).SendAsync("ReceiveAvarageVote", avarageVotes, avarageFibonacciVotes, votesWithUsers, gifUrl);
         }
         public async Task ResetVotes(string roomName)
         {
@@ -141,6 +141,12 @@ namespace PlanningPoker.Hubs
             }
 
             await base.OnDisconnectedAsync(exception);
+        }
+
+        public async Task SendGifToAll(string roomName, string vote)
+        {
+            var gifUrl = await _gifService.GetGif(vote);
+            await Clients.Group(roomName).SendAsync("ReceiveGif", gifUrl);
         }
     }
 }
