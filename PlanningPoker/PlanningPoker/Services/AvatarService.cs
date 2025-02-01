@@ -81,7 +81,7 @@ namespace PlanningPoker.Services
         private string GetAvatarApiEndpoint(string userName, string iconPack)
         {
             var apiSettings = GetAvatarApiSettings();
-            if (string.IsNullOrEmpty(iconPack))
+            if (string.IsNullOrEmpty(iconPack) || iconPack == "null")
             {
                 var random = new Random();
                 var apiIndex = random.Next(0, apiSettings.Count);
