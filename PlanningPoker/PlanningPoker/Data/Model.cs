@@ -27,7 +27,8 @@ namespace PlanningPoker.Data
         public string Avatar { get; set; }
         public DateTime JoinDate { get; set; }
         public string RoomName { get; set; }
-
+        public bool IsModerator { get; set; }
+        public string IconPack { get; set; }
     }
     public class Room
     {
@@ -64,14 +65,14 @@ namespace PlanningPoker.Data
         public DateTime CreateDate { get; set; } = DateTime.UtcNow;
 
     }
-    public class GifResponse
-    {
-        public List<GifData> Data { get; set; }
-    }
-    public class GifData
-    {
-        public string Id { get; set; }
-        public string Url { get; set; }
-    }
+    //public class GifResponse
+    //{
+    //    public List<GifData> Data { get; set; }
+    //}
+    //public class GifData
+    //{
+    //    public string Id { get; set; }
+    //    public string Url { get; set; }
+    //}
 
 }

@@ -4,7 +4,7 @@ namespace PlanningPoker.Services
 {
     public interface IroomService
     {
-        Task<Room> GetOrCreateRoomAsync(string roomName, string userName);
+        Task<Room> GetOrCreateRoomAsync(string roomName, string userName, string iconPack);
         Task JoinRoomAsync(Room room, User user, string connectionId);
         Task<List<User>> GetUsersInRoomAsync(string roomName);
         Task<bool> UserExistsInRoom(string roomName, string userName);

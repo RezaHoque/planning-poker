@@ -18,12 +18,12 @@ namespace PlanningPoker.Services
             _avatarService = avatarService;
             _log = log;
         }
-        public async Task<Room> GetOrCreateRoomAsync(string roomName, string userName)
+        public async Task<Room> GetOrCreateRoomAsync(string roomName, string userName, string iconPack)
         {
 
             if (!string.IsNullOrEmpty(roomName) && !string.IsNullOrEmpty(userName))
             {
-                var user = await _userService.GetOrCreateUserAsync(userName, roomName);
+                var user = await _userService.GetOrCreateUserAsync(userName, roomName, iconPack, false);
 
                 var existingRoom = await _dbContext.Rooms.FirstOrDefaultAsync(x => x.Name == roomName);
                 if (existingRoom == null)
@@ -52,7 +52,7 @@ namespace PlanningPoker.Services
             var usersInRoom = _dbContext.UserRooms.Where(x => x.Room.Name == roomName).Select(x => x.User).ToList();
             foreach (var user in usersInRoom)
             {
-                user.Avatar = await _avatarService.GetAvatar(user.Name, roomName);
+                user.Avatar = await _avatarService.GetAvatar(user.Name, roomName, user.IconPack);
                 _dbContext.Users.Update(user);
             }
             return usersInRoom;

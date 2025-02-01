@@ -7,6 +7,19 @@ document.addEventListener("DOMContentLoaded", function () {
     const returnUrl = getQueryStringParameter("returnUrl");
     const userName = document.getElementById("userName");
 
+    let selectedPack = null;
+
+    const icons = document.querySelectorAll('.icon');
+
+    icons.forEach(icon => {
+        icon.addEventListener('click', () => {
+
+            icons.forEach(i => i.classList.remove('selected'));
+            icon.classList.add('selected');
+            selectedPack = icon.getAttribute('data-pack');
+        });
+    });
+   
 
     if (!getCookie("userName")) {
         leaveButton.style.display = "none";
@@ -33,7 +46,10 @@ document.addEventListener("DOMContentLoaded", function () {
                 alert("Please enter your name!");
                 return;
             }
+           
             setCookie("userName", userName, 1);
+            setCookie("avatarPack", selectedPack, 1);
+            
 
             window.location.href = returnUrl ? returnUrl : `/room/${roomId}`;
         });

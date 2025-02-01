@@ -34,11 +34,11 @@ namespace PlanningPoker.Hubs
         //{
         //    await Clients.All.SendAsync("ReceiveMessage", user, message);
         //}
-        public async Task JoinRoom(string roomName, string userName)
+        public async Task JoinRoom(string roomName, string userName, string iconPack, bool isModerator)
         {
             // add user to db
-            var room = await _roomService.GetOrCreateRoomAsync(roomName, userName);
-            var user = await _userService.GetOrCreateUserAsync(userName, roomName);
+            var room = await _roomService.GetOrCreateRoomAsync(roomName, userName, iconPack);
+            var user = await _userService.GetOrCreateUserAsync(userName, roomName, iconPack, isModerator);
 
             bool isNewUser = false;
             if (!await _roomService.UserExistsInRoom(roomName, userName))

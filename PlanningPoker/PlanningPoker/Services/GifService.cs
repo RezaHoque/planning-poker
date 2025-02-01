@@ -22,12 +22,12 @@ namespace PlanningPoker.Services
 
             var keyWord = number switch
             {
-                "1" => "Easy peasy",
+                "1" => "piece of cake",
                 "2" => "Sounds good",
                 "3" => "you are amazing",
-                "5" => "Great job",
+                "5" => "Hi 5",
                 "8" => "are you serious",
-                "13" => "Too much",
+                "13" => "Way too much",
                 "21" => "angry",
                 _ => "happy"
             };
@@ -36,12 +36,14 @@ namespace PlanningPoker.Services
 
             var client = new HttpClient();
             var response = await client.GetAsync(url);
+            var random = new Random();
+            var gifIndex = random.Next(0, 5);
             if (response.IsSuccessStatusCode)
             {
                 var content = await response.Content.ReadAsStringAsync();
                 var json = JsonDocument.Parse(content);
                 var gifUrl = json.RootElement
-                     .GetProperty("data")[0]
+                     .GetProperty("data")[gifIndex]
                      .GetProperty("images")
                      .GetProperty("original")
                      .GetProperty("url")

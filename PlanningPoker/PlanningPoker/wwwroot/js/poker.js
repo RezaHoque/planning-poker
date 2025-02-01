@@ -4,6 +4,7 @@ var connection = new signalR.HubConnectionBuilder().withUrl("/pokerHub").build()
 
 const roomName = document.getElementById("roomName");
 const userName = document.getElementById("userName");
+const avatarPack = document.getElementById("avatarPack");
 const avarageVoteContainer = document.getElementById("avarageVote");
 const votesList = document.getElementById("paticipants");
 const voteButtons = document.querySelectorAll(".vote");
@@ -131,7 +132,7 @@ connection.start().then(function () {
     navUserName.textContent = currentUser;
 
     var badgeId = "userBadge" + getReplacedStr(currentUser) + currentRoom;
-    connection.invoke("JoinRoom", currentRoom, currentUser).catch(function (err) {
+    connection.invoke("JoinRoom", currentRoom, currentUser, avatarPack.value, false).catch(function (err) {
         return console.error(err.toString());
     });
 }).catch(function (err) {

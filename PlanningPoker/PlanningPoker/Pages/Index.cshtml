@@ -18,9 +18,9 @@
     }
 }
 
-<h1>
+<h4>
     Welcome to Planning Poker
-</h1>
+</h4>
 <div class="container">
     <div class="row">
         <div class="col col-6">
@@ -29,6 +29,20 @@
                 <label for="userName" class="form-label" ">Enter your name</label>
                 <input type="hidden" id="roomId" value="@roomId"/>
                 <input type="text" class="form-control" id="trapField" name="trapField" style="display:none"/>
+            </div>
+            <div class="mb-3">
+                <h6>Choose your avatar pack</h6>
+                <div class="icon-container">
+                    <div class="icon" data-pack="dicebear">
+                        <img src="/images/dicebear.png" alt="dicebear">
+                    </div>
+                    <div class="icon" data-pack="multiavatar">
+                        <img src="/images/Multiavatar.png" alt="multiavatar">
+                    </div>
+                    <div class="icon" data-pack="robohash">
+                        <img src="/images/robohash.png" alt="robohash">
+                    </div>
+                </div>
             </div>
             <div class="mb-3">
                 <button class="button-50-l" id="joinRoomBtn"></button>

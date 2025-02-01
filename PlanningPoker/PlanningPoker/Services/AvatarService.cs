@@ -16,7 +16,7 @@ namespace PlanningPoker.Services
             _configuration = configuration;
             _log = log;
         }
-        public async Task<string> GetAvatar(string userName, string roomId)
+        public async Task<string> GetAvatar(string userName, string roomId, string iconPack)
         {
             try
             {
@@ -26,7 +26,7 @@ namespace PlanningPoker.Services
                     return avatar.Avatar;
                 }
 
-                var userAvaratUrl = GetAvatarApiEndpoint(userName);
+                var userAvaratUrl = GetAvatarApiEndpoint(userName, iconPack);
 
                 var userAvatar = new UserAvatar
                 {
@@ -57,40 +57,67 @@ namespace PlanningPoker.Services
         {
             var apiSettings = new Dictionary<string, string>();
 
-            var apiSection = _configuration.GetSection("Api");
+            var apiSection = _configuration.GetSection("Api:Avatar");
 
             foreach (var avatarType in apiSection.GetChildren())
             {
                 foreach (var avatarConfig in avatarType.GetChildren())
                 {
-                    var baseUrl = avatarConfig.GetSection("BaseUrl").Value;
-                    if (!string.IsNullOrEmpty(baseUrl))
+                    //  var baseUrl = avatarConfig.GetSection("BaseUrl").Value;
+                    if (!string.IsNullOrEmpty(avatarConfig.Value))
                     {
-                        apiSettings[$"{avatarType.Key}:{avatarConfig.Key}"] = baseUrl;
+                        // apiSettings[$"{avatarType.Key}:{avatarConfig.Value}"] = baseUrl;
+                        if (!apiSettings.ContainsKey(avatarType.Key))
+                        {
+                            apiSettings.Add(avatarType.Key, avatarConfig.Value);
+                        }
+
                     }
                 }
             }
 
             return apiSettings;
         }
-        private string GetAvatarApiEndpoint(string userName)
+        private string GetAvatarApiEndpoint(string userName, string iconPack)
         {
             var apiSettings = GetAvatarApiSettings();
-            var random = new Random();
-            var apiIndex = random.Next(0, apiSettings.Count);
-            var selectedSettings = apiSettings.ElementAt(apiIndex);
+            if (string.IsNullOrEmpty(iconPack))
+            {
+                var random = new Random();
+                var apiIndex = random.Next(0, apiSettings.Count);
+                var selectedSettings = apiSettings.ElementAt(apiIndex);
 
-            if (selectedSettings.Key == "Robohash")
-            {
-                return $"{selectedSettings.Value}{userName}?set=set3";
-            }
-            else if (selectedSettings.Key == "DiceBear")
-            {
-                return $"{selectedSettings.Value}{userName}";
+                if (selectedSettings.Key == "Robohash")
+                {
+                    return $"{selectedSettings.Value}{userName}?set=set3";
+                }
+                else if (selectedSettings.Key == "DiceBear")
+                {
+                    return $"{selectedSettings.Value}{userName}";
+                }
+                else
+                {
+                    return $"{selectedSettings.Value}{userName}.png";
+                }
             }
             else
             {
-                return $"{selectedSettings.Value}{userName}.png";
+                var dictVal = apiSettings.FirstOrDefault(x => x.Key.Equals(iconPack, StringComparison.OrdinalIgnoreCase)).Value;
+
+                if (string.Equals(iconPack, "Robohash", StringComparison.OrdinalIgnoreCase))
+                {
+
+                    return $"{dictVal}{userName}?set=set3";
+                }
+                else if (string.Equals(iconPack, "DiceBear", StringComparison.OrdinalIgnoreCase))
+                {
+                    return $"{dictVal}{userName}";
+                }
+                else
+                {
+                    return $"{dictVal}{userName}.png";
+
+                }
             }
 
 

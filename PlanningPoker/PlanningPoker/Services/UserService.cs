@@ -29,7 +29,7 @@ namespace PlanningPoker.Services
             return userName;
         }
 
-        public async Task<User> GetOrCreateUserAsync(string userName, string roomName)
+        public async Task<User> GetOrCreateUserAsync(string userName, string roomName, string iconPack, bool isModerator)
         {
             if (!string.IsNullOrEmpty(userName))
             {
@@ -42,13 +42,17 @@ namespace PlanningPoker.Services
                         Name = userName,
                         JoinDate = DateTime.Now,
                         Avatar = string.Empty,
-                        RoomName = roomName
+                        RoomName = roomName,
+                        IconPack = iconPack,
+                        IsModerator = isModerator
 
                     };
                     _dbContext.Users.Add(newUser);
                     await _dbContext.SaveChangesAsync();
                     return newUser;
                 }
+                existingUser.IconPack = iconPack;
+                await _dbContext.SaveChangesAsync();
                 return existingUser;
             }
             return null;

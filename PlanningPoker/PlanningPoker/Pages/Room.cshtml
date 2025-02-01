@@ -10,6 +10,7 @@
     string userName = string.Empty;
     string userNameUnesp = string.Empty;
     var cookieUserName = Request.Cookies["userName"];
+    var avatarPack = Request.Cookies["avatarPack"];
 
     var roomName = string.Empty;
 
@@ -54,6 +55,7 @@
 
         <input type="hidden" id="roomName" value="@roomName"/>
         <input type="hidden" id="userName" value="@userNameUnesp" />
+        <input type="hidden" id="avatarPack" value="@avatarPack" />
     </div>
   
     <div class="text-center">
