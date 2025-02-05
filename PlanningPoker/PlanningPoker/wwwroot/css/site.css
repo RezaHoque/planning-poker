@@ -234,6 +234,8 @@ ul {
 .icon {
     width: 100px;
     height: 100px;
+    min-width: 100px;
+    min-height: 100px;
     border: 1px solid #cad6e1;
     border-radius: 12px;
     display: flex;
@@ -242,7 +244,9 @@ ul {
     cursor: pointer;
     transition: all 0.3s ease-in-out;
     overflow: hidden;
+    box-sizing: border-box;
 }
+
 
     .icon img {
         width: 80px;
