@@ -130,12 +130,13 @@ namespace PlanningPoker.Hubs
         {
             var user = await _userService.GetUserByConnectionId(Context.ConnectionId);
             var usersInroom = await _roomService.GetUsersInRoomByConnectionAsync(Context.ConnectionId);
-
+            var roomName = usersInroom.FirstOrDefault().Room.Name;
             if (user != null)
             {
                 if (usersInroom.Any())
                 {
-                    Clients.Group(usersInroom.FirstOrDefault().Room.Name).SendAsync("Leaveroom", user.Name);
+                    await Groups.RemoveFromGroupAsync(Context.ConnectionId, roomName);
+                    await Clients.Group(roomName).SendAsync("Leaveroom", user.Name);
                 }
                 await _roomService.LeaveRoomAsync(user.Name, Context.ConnectionId);
             }

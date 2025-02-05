@@ -13,6 +13,7 @@ const revealVotesButton = document.getElementById("revealVotes");
 const navUserName = document.getElementById("navUserName");
 const reactionDiv = document.getElementById("reaction");
 
+
 let currentRoom = "";
 let currentUser = "";
 let avarageVote = 0;
@@ -24,6 +25,7 @@ const roomVotes = new Map();
 connection.on("UserJoined", function (newUser, userList) {
 
     totalUsers = userList.length;
+    
     const thumbnailDiv = createUserThumbnail(newUser.name, newUser.avatar);
     votesList.appendChild(thumbnailDiv);
     
@@ -191,7 +193,14 @@ function createUserThumbnail(user, avatarUrl) {
 
     // Create an image element
     const img = document.createElement("img");
-    img.src = avatarUrl; // Set the avatar URL
+    if (avatarUrl.includes("multiavatar")) {
+        var svg = multiavatar(user);
+        const encodedSVG = encodeURIComponent(svg);
+        img.src = `data:image/svg+xml;charset=utf-8,${encodedSVG}`;
+    } else {
+        img.src = avatarUrl;
+    }
+
     img.className = "img-thumbnail shadow";
     img.style.width = "100px"; 
     img.style.height = "100px";

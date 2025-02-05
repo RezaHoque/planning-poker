@@ -4,7 +4,6 @@
 @inject IuserService _userService
 @inject InameService _nameService
 
-
 @{
     ViewData["Title"] = "Poker room";
     string userName = string.Empty;
@@ -27,20 +26,20 @@
     {
 
         //uri decode the cookie value
-        userName = await _userService.CheckAndGetUserName(cookieUserName, roomName);
+        // userName = await _userService.CheckAndGetUserName(cookieUserName, roomName);
 
-        if(!cookieUserName.Equals(userName, StringComparison.OrdinalIgnoreCase))
-        {
-            //update cookie.
-            if (Request.Cookies.TryGetValue("userName", out var cookieValue))
-            {
-                Response.Cookies.Append("userName", userName, new CookieOptions
-                {
-                    Expires = DateTimeOffset.UtcNow.AddDays(1)
-                });
-            }
-        }
-        userNameUnesp = Uri.UnescapeDataString(userName);
+        // if(!cookieUserName.Equals(userName, StringComparison.OrdinalIgnoreCase))
+        // {
+        //     //update cookie.
+        //     if (Request.Cookies.TryGetValue("userName", out var cookieValue))
+        //     {
+        //         Response.Cookies.Append("userName", userName, new CookieOptions
+        //         {
+        //             Expires = DateTimeOffset.UtcNow.AddDays(1)
+        //         });
+        //     }
+        // }
+        userNameUnesp = Uri.UnescapeDataString(cookieUserName);
     }
     else
     {
@@ -109,5 +108,6 @@
     <div id="reaction" class="text-center" style="padding:15px;"></div>
 
 </div>
+<script src="~/js/multiavatar.min.js"></script>
 <script src="~/js/signalr/dist/browser/signalr.js"></script>
 <script src="~/js/poker.js"></script>
