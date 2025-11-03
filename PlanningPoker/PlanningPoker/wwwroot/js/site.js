@@ -7,6 +7,28 @@ document.addEventListener("DOMContentLoaded", function () {
     const returnUrl = getQueryStringParameter("returnUrl");
     const userName = document.getElementById("userName");
 
+    // Handle floating label for modern input
+    if (userName) {
+        // Check initial value
+        if (userName.value && userName.value.trim() !== '') {
+            userName.classList.add('has-value');
+        }
+        
+        // Handle input events
+        userName.addEventListener('input', function() {
+            if (this.value && this.value.trim() !== '') {
+                this.classList.add('has-value');
+            } else {
+                this.classList.remove('has-value');
+            }
+        });
+        
+        // Handle focus/blur
+        userName.addEventListener('focus', function() {
+            this.classList.add('has-value');
+        });
+    }
+
     let selectedPack = null;
 
     const icons = document.querySelectorAll('.icon');
@@ -29,7 +51,11 @@ document.addEventListener("DOMContentLoaded", function () {
         leaveButton.style.display = "none";
     } else {
         navUserName.textContent = getCookie("userName");
-        userName.value = getCookie("userName");
+        const cookieUserName = getCookie("userName");
+        if (cookieUserName) {
+            userName.value = cookieUserName;
+            userName.classList.add('has-value');
+        }
     }
    
     if (joinRoomBtn) {

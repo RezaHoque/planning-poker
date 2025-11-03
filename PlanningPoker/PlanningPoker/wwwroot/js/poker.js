@@ -26,6 +26,14 @@ connection.on("UserJoined", function (newUser, userList) {
 
     totalUsers = userList.length;
     
+    // If this is the current user joining, update their name if it was modified
+    const originalUserName = userName.value;
+    if (newUser.name.startsWith(originalUserName) && newUser.name !== originalUserName) {
+        currentUser = newUser.name;
+        navUserName.textContent = currentUser;
+        userName.value = currentUser;
+    }
+    
     const thumbnailDiv = createUserThumbnail(newUser.name, newUser.avatar);
     votesList.appendChild(thumbnailDiv);
     
@@ -35,6 +43,21 @@ connection.on("UserJoined", function (newUser, userList) {
 connection.on("ReceiveUserList", (userList) => {
     votesList.innerHTML = "";
 
+    // Find the current user's actual name (may have been modified with suffix)
+    const originalUserName = currentUser;
+    const actualUser = userList.find(u => 
+        u.userName === originalUserName || 
+        u.userName.startsWith(originalUserName + "_")
+    );
+    
+    // Update currentUser if name was modified
+    if (actualUser && actualUser.userName !== originalUserName) {
+        currentUser = actualUser.userName;
+        navUserName.textContent = currentUser;
+        // Update the hidden input value
+        userName.value = currentUser;
+    }
+
     userList.forEach(user => {
         const thumbnailDiv = createUserThumbnail(user.userName, user.avatar);
         votesList.appendChild(thumbnailDiv);
@@ -43,7 +66,7 @@ connection.on("ReceiveUserList", (userList) => {
 connection.on("ReceiveVote", function (user, vote) {
     var badgeId = "userBadge" + getReplacedStr(user) + currentRoom;
     const badge = document.getElementById(badgeId);
-    badge.innerHTML = '<i class="bi bi-check-circle fs-5"></i>';
+    badge.innerHTML = '<i class="bi bi-check-circle fs-5" style="color: #10e3ab;"></i>';
     badge.className = "badge bg-success";
     badge.style.fontSize = "18px"
 
@@ -180,8 +203,8 @@ function createUserThumbnail(user, avatarUrl) {
     // Create the badge
     const badge = document.createElement("span");
     badge.className = "badge bg-light badge-soft";
-    badge.style.top = "10px";
-    badge.style.left = "50%";
+    // badge.style.top = "10px";
+    // badge.style.left = "50%";
 
     badge.style.minWidth = "50px"; 
     badge.style.height = "50px"; 
@@ -191,19 +214,46 @@ function createUserThumbnail(user, avatarUrl) {
     badge.style.fontSize = "25px";
     badge.id = "userBadge" + userStr + currentRoom;
 
-    // Create an image element
-    const img = document.createElement("img");
+    // Create an image element or container for multiavatar
+    let imgContainer;
+    let img;
+    
     if (avatarUrl.includes("multiavatar")) {
+        // Create a wrapper div for multiavatar with white background
+        imgContainer = document.createElement("div");
+        imgContainer.className = "multiavatar-wrapper";
+        imgContainer.style.width = "100px";
+        imgContainer.style.height = "100px";
+        imgContainer.style.borderRadius = "14px";
+        imgContainer.style.background = "#ffffff";
+        imgContainer.style.border = "2px solid var(--pp-card-border)";
+        imgContainer.style.boxShadow = "0 4px 12px rgba(0,0,0,0.2)";
+        imgContainer.style.display = "flex";
+        imgContainer.style.alignItems = "center";
+        imgContainer.style.justifyContent = "center";
+        imgContainer.style.overflow = "hidden";
+        imgContainer.style.position = "relative";
+        
         var svg = multiavatar(user);
+        // Keep SVG original - no modifications
         const encodedSVG = encodeURIComponent(svg);
+        img = document.createElement("img");
         img.src = `data:image/svg+xml;charset=utf-8,${encodedSVG}`;
+        img.style.width = "100%";
+        img.style.height = "100%";
+        img.style.objectFit = "contain";
+        img.classList.add("multiavatar-img");
+        img.classList.add("img-thumbnail", "shadow");
+        
+        imgContainer.appendChild(img);
     } else {
+        img = document.createElement("img");
         img.src = avatarUrl;
+        img.className = "img-thumbnail shadow";
+        img.style.width = "100px"; 
+        img.style.height = "100px";
+        imgContainer = img;
     }
-
-    img.className = "img-thumbnail shadow";
-    img.style.width = "100px"; 
-    img.style.height = "100px";
 
     // Create a caption for the username
     const caption = document.createElement("p");
@@ -211,7 +261,7 @@ function createUserThumbnail(user, avatarUrl) {
     caption.className = "mt-2";
 
     
-    thumbnailDiv.appendChild(img);
+    thumbnailDiv.appendChild(imgContainer);
     thumbnailDiv.appendChild(caption);
     thumbnailDiv.appendChild(badge);
 

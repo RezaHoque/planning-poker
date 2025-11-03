@@ -36,12 +36,19 @@ namespace PlanningPoker.Hubs
         //}
         public async Task JoinRoom(string roomName, string userName, string iconPack, bool isModerator)
         {
+            // Get existing users in room to check for duplicate names
+            var existingUsers = await _roomService.GetUsersInRoomAsync(roomName);
+            var existingUserNames = existingUsers.Select(u => u.Name).ToList();
+
+            // Generate unique username if duplicates exist
+            string uniqueUserName = GenerateUniqueUserName(userName, existingUserNames);
+
             // add user to db
-            var room = await _roomService.GetOrCreateRoomAsync(roomName, userName, iconPack);
-            var user = await _userService.GetOrCreateUserAsync(userName, roomName, iconPack, isModerator);
+            var room = await _roomService.GetOrCreateRoomAsync(roomName, uniqueUserName, iconPack);
+            var user = await _userService.GetOrCreateUserAsync(uniqueUserName, roomName, iconPack, isModerator);
 
             bool isNewUser = false;
-            if (!await _roomService.UserExistsInRoom(roomName, userName))
+            if (!await _roomService.UserExistsInRoom(roomName, uniqueUserName))
             {
                 await _roomService.JoinRoomAsync(room, user, Context.ConnectionId);
                 isNewUser = true;
@@ -62,14 +69,36 @@ namespace PlanningPoker.Hubs
             {
                 await Clients.Group(roomName).SendAsync("UserJoined", new User
                 {
-                    Name = usersInRoom.FirstOrDefault(x => x.Name == userName).Name,
-                    Avatar = usersInRoom.FirstOrDefault(x => x.Name == userName).Avatar
+                    Name = usersInRoom.FirstOrDefault(x => x.Name == uniqueUserName)?.Name ?? uniqueUserName,
+                    Avatar = usersInRoom.FirstOrDefault(x => x.Name == uniqueUserName)?.Avatar ?? string.Empty
                 }, userListWithAvatars);
             }
             await Clients.Caller.SendAsync("ReceiveUserList", userListWithAvatars);
 
-            _logger.Info($"{userName} has joined the room {roomName}.");
+            _logger.Info($"{uniqueUserName} (original: {userName}) has joined the room {roomName}.");
             //await Clients.OthersInGroup(roomName).SendAsync("UserJoined", $"{userName} has joined the room.");
+        }
+
+        private string GenerateUniqueUserName(string baseUserName, List<string> existingUserNames)
+        {
+            // If name doesn't exist, return as-is
+            if (!existingUserNames.Contains(baseUserName))
+            {
+                return baseUserName;
+            }
+
+            // Find how many users have the same base name
+            int suffix = 1;
+            string candidateName;
+
+            do
+            {
+                candidateName = $"{baseUserName}_{suffix}";
+                suffix++;
+            }
+            while (existingUserNames.Contains(candidateName));
+
+            return candidateName;
         }
 
         public async Task LeaveRoom(string roomName, string userName)

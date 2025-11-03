@@ -18,66 +18,67 @@
     }
 }
 
-<h4>
-    Welcome to Planning Poker
-</h4>
-<div class="container">
-    <div class="row">
-        <div class="col col-6">
-            <div class="form-floating mb-3">
-                <input type="text" class="form-control" id="userName" placeholder="For ex: Donald Trump" required>
-                <label for="userName" class="form-label" ">Enter your name</label>
-                <input type="hidden" id="roomId" value="@roomId"/>
-                <input type="text" class="form-control" id="trapField" name="trapField" style="display:none"/>
-            </div>
-            <div class="mb-3">
-                <h6>
-                    Choose your avatar pack  
-                    <i class="bi bi-info-circle custom-icon" data-bs-toggle="tooltip" data-bs-placement="top"
-                       title="Based on your selection, you will be assigned a random avatar.."></i>
-                </h6>
-               
-                <div class="icon-container">
-                    <div class="icon" data-pack="dicebear">
-                        <img src="/images/dicebear.png" alt="dicebear">
-                    </div>
-                    <div class="icon" data-pack="multiavatar">
-                        <img src="/images/Multiavatar.png" alt="multiavatar">
-                    </div>
-                    <div class="icon" data-pack="robohash">
-                        <img src="/images/robohash.png" alt="robohash">
+<div class="container index-page">
+    <div class="row justify-content-center">
+        <div class="col-lg-8 col-xl-7">
+            <h1 class="welcome-title">
+                Welcome to Planning Poker
+            </h1>
+
+            <div class="index-card glass-card">
+                <div class="form-floating mb-4">
+                    <input type="text" class="form-control modern-input" id="userName"
+                        placeholder="For ex: Donald Trump" required>
+                    <label for="userName" class="form-label modern-label">Enter your name</label>
+                    <input type="hidden" id="roomId" value="@roomId" />
+                    <input type="text" class="form-control" id="trapField" name="trapField" style="display:none" />
+                </div>
+
+                <div class="mb-4">
+                    <h6 class="avatar-pack-title">
+                        Choose your avatar pack
+                        <i class="bi bi-info-circle custom-icon" data-bs-toggle="tooltip" data-bs-placement="top"
+                            title="Based on your selection, you will be assigned a random avatar.."></i>
+                    </h6>
+
+                    <div class="icon-container">
+                        <div class="icon" data-pack="dicebear">
+                            <img src="/images/dicebear.png" alt="dicebear">
+                        </div>
+                        <div class="icon" data-pack="multiavatar">
+                            <img src="/images/Multiavatar.png" alt="multiavatar" style="border-radius: 50px;">
+                        </div>
+                        <div class="icon" data-pack="robohash">
+                            <img src="/images/robohash.png" alt="robohash">
+                        </div>
                     </div>
                 </div>
-            </div>
-            <div class="mb-3">
-                <button class="button-50-l" id="joinRoomBtn"></button>
-            </div>
-        </div>
-    </div>
-    <div class="row">
-        <div class="col-md-8">
-           <div class="h-100 p-5 bg-body-tertiary border rounded-3 shadow">
-                
-                    <h2>How it works</h2>
-                    <p>
-                        Enter your name to create a new room. 
-                        <br>
-                        Once the room is created, copy the unique URL and share it with your team.
-                    </p>
-                    <p>
-                        <ul>
-                            <li>Free forever</li>
-                            <li>No ads</li>
-                            <li>
-                                Open source <a href="https://github.com/RezaHoque/planning-poker" target="_blank"><i class="bi bi-github"></i></a>
-                            </li>
-                         
-                        </ul>
-                    </p>
-           
 
+                <div class="mb-3">
+                    <button class="button-50-l" id="joinRoomBtn"></button>
+                </div>
             </div>
         </div>
     </div>
-   
+
+    <div class="row justify-content-center mt-4 how-it-works">
+        <div class="col-lg-8 col-xl-7">
+            <div class="index-card glass-card how-it-works">
+                <h2 class="section-title">How it works</h2>
+                <p class="section-text">
+                    Enter your name to create a new room.
+                    <br>
+                    Once the room is created, copy the unique URL and share it with your team.
+                </p>
+                <ul class="feature-list">
+                    <li>Free forever</li>
+                    <li>No ads</li>
+                    <li>
+                        Open source <a href="https://github.com/RezaHoque/planning-poker" target="_blank"><i
+                                class="bi bi-github"></i></a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
 </div>
