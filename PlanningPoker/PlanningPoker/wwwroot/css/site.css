@@ -41,10 +41,14 @@ html::-webkit-scrollbar {
 }
 
 body {
-  margin-bottom: 60px;
+  margin: 0;
+  padding: 0;
   overflow-x: hidden;
   width: 100%;
   max-width: 100%;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
 }
 
 .avatarContainer {
@@ -722,6 +726,7 @@ main {
   box-sizing: border-box;
   padding-left: 20px;
   padding-right: 20px;
+  flex: 1;
 }
 
 @media (max-width: 1400px) {
@@ -856,24 +861,16 @@ main {
   font-weight: 700;
   text-decoration: none;
   position: relative;
-  background: linear-gradient(135deg, 
-    rgba(139,92,246,1) 0%, 
-    rgba(34,211,238,1) 50%, 
-    rgba(139,92,246,1) 100%);
-  background-size: 200% auto;
+  background: linear-gradient(135deg, rgb(92 199 246) 0%, rgba(34, 211, 238, 1) 50%, rgb(111 225 243) 100%);
+  background-size: 100% auto;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
-  animation: gradientShift 3s ease infinite;
+  /* Animation removed - keeping static */
   letter-spacing: 1px;
   filter: drop-shadow(0 0 8px rgba(139,92,246,0.6)) 
           drop-shadow(0 0 12px rgba(34,211,238,0.4));
   transition: filter 0.3s ease, transform 0.3s ease;
-}
-
-@keyframes gradientShift {
-  0%, 100% { background-position: 0% center; }
-  50% { background-position: 100% center; }
 }
 
 .navbar-brand:hover {
@@ -1231,6 +1228,8 @@ main {
 .footer {
   position: relative;
   padding: 20px 0 !important;
+  margin-top: auto; /* Sticks to bottom with flexbox */
+  width: 100%;
 }
 
 .footer,
@@ -1285,4 +1284,368 @@ main {
 .footer .bi:hover {
   filter: drop-shadow(0 0 10px rgba(34,211,238,1));
   transform: scale(1.2);
+}
+
+/* Buy Me a Coffee button styling */
+.footer-bmc {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  color: #2b2b2b !important;
+}
+
+.footer-bmc #bmc-wbtn {
+  filter: drop-shadow(0 0 8px rgba(139,92,246,0.4));
+  transition: filter 0.3s ease, transform 0.3s ease;
+}
+
+.footer-bmc #bmc-wbtn:hover {
+  filter: drop-shadow(0 0 4px rgba(34,211,238,0.6));
+  transform: scale(1.05);
+}
+
+/* ============================================
+   Mobile Responsive Improvements
+   ============================================ */
+
+/* Navbar mobile improvements */
+.navbar-right {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+@media (max-width: 768px) {
+  .navbar-brand {
+    font-size: 1.3rem !important;
+    letter-spacing: 0.5px;
+  }
+  
+  .navbar .container {
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+  
+  .navbar-right {
+    gap: 8px;
+    margin-top: 8px;
+    width: 100%;
+    justify-content: flex-end;
+  }
+  
+  .navUserName {
+    font-size: 0.9rem !important;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 120px;
+  }
+  
+  .button-50-l {
+    padding: 8px 16px !important;
+    font-size: 0.85rem !important;
+  }
+}
+
+@media (max-width: 576px) {
+  .navbar-brand {
+    font-size: 1.1rem !important;
+  }
+  
+  .navbar-right {
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 6px;
+  }
+  
+  .navUserName {
+    max-width: 100px;
+    font-size: 0.8rem !important;
+  }
+  
+  .button-50-l {
+    padding: 6px 12px !important;
+    font-size: 0.75rem !important;
+  }
+}
+
+/* Footer mobile improvements */
+@media (max-width: 768px) {
+  .footer {
+    padding: 15px 0 !important;
+  }
+  
+  .footer .container {
+    padding-left: 15px;
+    padding-right: 15px;
+  }
+  
+  .footer .row {
+    flex-direction: column;
+    gap: 15px;
+    align-items: flex-start !important;
+  }
+  
+  .footer .col {
+    width: 100% !important;
+    max-width: 100%;
+    flex: 0 0 100%;
+  }
+  
+  .footer-bmc {
+    justify-content: flex-start !important;
+    width: 100%;
+  }
+  
+  .footer img {
+    width: 40px !important;
+    height: 40px !important;
+  }
+  
+  .footer {
+    font-size: 0.85rem;
+    line-height: 1.5;
+  }
+}
+
+@media (max-width: 576px) {
+  .footer {
+    padding: 12px 0 !important;
+    font-size: 0.75rem;
+  }
+  
+  .footer img {
+    width: 30px !important;
+    height: 30px !important;
+  }
+  
+  .footer .container {
+    padding-left: 10px;
+    padding-right: 10px;
+  }
+  
+  .footer-bmc {
+    justify-content: flex-start !important;
+  }
+  
+  .footer-bmc #bmc-wbtn {
+    transform: scale(0.9);
+  }
+}
+
+/* Container and main mobile improvements */
+@media (max-width: 768px) {
+  .container,
+  main {
+    padding-left: 15px !important;
+    padding-right: 15px !important;
+  }
+  
+  main {
+    padding-bottom: 1.5rem !important;
+  }
+}
+
+@media (max-width: 576px) {
+  .container,
+  main {
+    padding-left: 10px !important;
+    padding-right: 10px !important;
+  }
+  
+  main {
+    padding-bottom: 1rem !important;
+  }
+}
+
+/* Index page mobile improvements */
+@media (max-width: 768px) {
+  .index-card.glass-card {
+    padding: 1.5rem !important;
+    margin-bottom: 1.5rem;
+  }
+  
+  .welcome-title {
+    font-size: 1.8rem !important;
+    margin-bottom: 1.5rem;
+  }
+  
+  .section-title {
+    font-size: 1.3rem !important;
+  }
+  
+  .section-text {
+    font-size: 0.95rem !important;
+  }
+  
+  .modern-input {
+    font-size: 1rem !important;
+    padding: 16px 12px 8px 12px !important;
+  }
+  
+  .modern-label {
+    font-size: 0.9rem !important;
+  }
+  
+  .icon-container {
+    gap: 12px !important;
+  }
+  
+  .icon {
+    width: 60px !important;
+    height: 60px !important;
+  }
+}
+
+@media (max-width: 576px) {
+  .index-card.glass-card {
+    padding: 1rem !important;
+    margin-bottom: 1rem;
+    border-radius: 16px !important;
+  }
+  
+  .welcome-title {
+    font-size: 1.5rem !important;
+    margin-bottom: 1rem;
+  }
+  
+  .section-title {
+    font-size: 1.1rem !important;
+  }
+  
+  .section-text {
+    font-size: 0.85rem !important;
+  }
+  
+  .modern-input {
+    font-size: 0.9rem !important;
+    padding: 14px 10px 6px 10px !important;
+  }
+  
+  .modern-label {
+    font-size: 0.8rem !important;
+  }
+  
+  .icon-container {
+    gap: 10px !important;
+  }
+  
+  .icon {
+    width: 50px !important;
+    height: 50px !important;
+  }
+  
+  .feature-list {
+    font-size: 0.85rem !important;
+    padding-left: 1.2rem !important;
+  }
+}
+
+/* Room page mobile improvements */
+@media (max-width: 768px) {
+  .avatarContainer {
+    padding: 16px !important;
+    gap: 12px !important;
+  }
+  
+  .thumbnail {
+    width: 80px !important;
+    height: 80px !important;
+  }
+  
+  .thumbnail img.img-thumbnail,
+  .thumbnail .multiavatar-wrapper {
+    width: 80px !important;
+    height: 80px !important;
+  }
+  
+  .button-54,
+  .button-54-n {
+    padding: 10px 20px !important;
+    font-size: 14px !important;
+  }
+  
+  #avarageVoteBadge {
+    font-size: 1.1rem !important;
+    padding: 8px 16px !important;
+  }
+}
+
+@media (max-width: 576px) {
+  .deck {
+    gap: 8px !important;
+    margin: 12px auto 20px auto !important;
+  }
+  
+  .chip,
+  .vote.chip {
+    width: 56px !important;
+    height: 56px !important;
+    font-size: 1.1rem !important;
+  }
+  
+  .avatarContainer {
+    padding: 12px !important;
+    gap: 10px !important;
+  }
+  
+  .thumbnail {
+    width: 70px !important;
+    height: 70px !important;
+  }
+  
+  .thumbnail img.img-thumbnail,
+  .thumbnail .multiavatar-wrapper {
+    width: 70px !important;
+    height: 70px !important;
+  }
+  
+  .thumbnail .badge {
+    font-size: 0.7rem !important;
+    padding: 2px 6px !important;
+    top: -8px !important;
+    right: -8px !important;
+  }
+  
+  .button-54,
+  .button-54-n {
+    padding: 8px 16px !important;
+    font-size: 13px !important;
+    gap: 6px;
+  }
+  
+  .button-54 i,
+  .button-54-n i {
+    font-size: 14px !important;
+  }
+  
+  #avarageVoteBadge {
+    font-size: 1rem !important;
+    padding: 6px 12px !important;
+  }
+}
+
+/* Header mobile improvements */
+@media (max-width: 768px) {
+  .navbar.bg-white {
+    margin-bottom: 1rem !important;
+  }
+  
+  header {
+    margin-bottom: 0.5rem;
+  }
+}
+
+/* Ensure body flex layout works on mobile */
+@media (max-width: 576px) {
+  body {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+  
+  html {
+    height: 100%;
+  }
 }
