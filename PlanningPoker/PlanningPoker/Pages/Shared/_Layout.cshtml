@@ -39,25 +39,17 @@
             <div class="container">
                 <a class="navbar-brand share-tech-mono-regular" asp-area="" asp-page="/Index">
                     PlanningPoker
-
                 </a>
-                @*  <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
-                        aria-expanded="false" aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
-                </button> *@
-                @*   <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
-                    <ul class="navbar-nav flex-grow-1">
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-page="/Index">Home</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-page="/Privacy">Privacy</a>
-                        </li>
-                    </ul>
-                </div> *@
+                <div class="navbar-buttons">
+                    <span><button class="button-50-l" id="btnCopyUrl" title="Copy room URL">
+                            <i class="bi bi-link-45deg"></i> Copy URL
+                        </button></span>
+                </div>
                 <div class="navbar-right">
                     <span id="navUserName" class="navUserName share-tech-mono-regular"></span>
-                    <span><button class="button-50-l" id="btnLeave">Leave</button></span>
+                    <span><button class="button-50-l" id="btnLeave">
+                            <i class="bi bi-box-arrow-right"></i> Leave
+                        </button></span>
                 </div>
             </div>
         </nav>
