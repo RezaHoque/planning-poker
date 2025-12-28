@@ -1,0 +1,22 @@
+version: '3.8'
+
+services:
+  planning-poker:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: planning-poker
+    ports:
+      - "8080:8080"
+    volumes:
+      # Persist database across container restarts
+      - ./database:/app/Database
+      # Persist logs across container restarts
+      - ./logs:/app/Logs
+    env_file:
+      - .env
+    restart: unless-stopped
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+      - ASPNETCORE_URLS=http://+:8080
+

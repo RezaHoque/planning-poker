@@ -1742,3 +1742,202 @@ main {
     text-align: center;
   }
 }
+
+/* =============================
+   Commercial Support Page
+   ============================= */
+
+.commercial-support ul li:before {
+    content: none !important;
+}
+
+.commercial-support {
+    padding: 3rem 0 5rem;
+}
+
+.commercial-support .hero-section {
+    text-align: center;
+    margin-bottom: 4rem;
+}
+
+.commercial-support .hero-title {
+    font-size: 3rem;
+    font-weight: 700;
+    background: linear-gradient(135deg,
+            rgba(99, 102, 241, 1) 0%,
+            rgba(59, 130, 246, 1) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 1.5rem;
+}
+
+.commercial-support .hero-subtitle {
+    font-size: 1.25rem;
+    color: #6b7280;
+    max-width: 700px;
+    margin: 0 auto;
+    line-height: 1.7;
+}
+
+.commercial-support .feature-card {
+    background: linear-gradient(180deg,
+            rgba(255, 255, 255, 0.98) 0%,
+            rgba(255, 255, 255, 0.95) 100%);
+    border: 1px solid rgba(99, 102, 241, 0.1);
+    border-radius: 16px;
+    padding: 2.5rem;
+    height: 100%;
+    transition: all 0.3s ease;
+    backdrop-filter: blur(10px);
+}
+
+.commercial-support .feature-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 40px rgba(99, 102, 241, 0.15);
+    border-color: rgba(99, 102, 241, 0.2);
+}
+
+.commercial-support .feature-icon {
+    width: 56px;
+    height: 56px;
+    border-radius: 12px;
+    background: linear-gradient(135deg, rgba(99, 102, 241, 0.1), rgba(59, 130, 246, 0.1));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.75rem;
+    color: #6366f1;
+    margin-bottom: 1.5rem;
+}
+
+.commercial-support .feature-card h3 {
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin-bottom: 1.25rem;
+    color: #1f2937;
+}
+
+.commercial-support .feature-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.commercial-support .feature-list li {
+    padding: 0.75rem 0;
+    color: #4b5563;
+    font-size: 1rem;
+    line-height: 1.6;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.commercial-support .feature-list li:last-child {
+    border-bottom: none;
+}
+
+.commercial-support .feature-list li i {
+    color: #10b981;
+    margin-right: 0.75rem;
+    font-size: 1.1rem;
+}
+
+.commercial-support .pricing-section {
+    background: linear-gradient(135deg, rgba(99, 102, 241, 0.05), rgba(59, 130, 246, 0.05));
+    border-radius: 20px;
+    padding: 3rem 2rem;
+    margin: 3rem 0;
+}
+
+.commercial-support .pricing-card {
+    background: white;
+    border-radius: 12px;
+    padding: 2rem;
+    text-align: center;
+    transition: all 0.3s ease;
+    border: 2px solid transparent;
+}
+
+.commercial-support .pricing-card:hover {
+    border-color: rgba(99, 102, 241, 0.3);
+    transform: translateY(-4px);
+    box-shadow: 0 8px 24px rgba(99, 102, 241, 0.15);
+}
+
+.commercial-support .pricing-card h5 {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #6b7280;
+    margin-bottom: 1rem;
+}
+
+.commercial-support .pricing-card .price {
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: #1f2937;
+    margin: 0;
+}
+
+.commercial-support .contact-section {
+    background: linear-gradient(180deg,
+            rgba(255, 255, 255, 0.98) 0%,
+            rgba(255, 255, 255, 0.95) 100%);
+    border: 1px solid rgba(99, 102, 241, 0.1);
+    border-radius: 16px;
+    padding: 3rem;
+    text-align: center;
+}
+
+.commercial-support .contact-section h3 {
+    font-size: 1.75rem;
+    font-weight: 600;
+    margin-bottom: 2rem;
+    color: #1f2937;
+}
+
+.commercial-support .contact-links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1.5rem;
+    justify-content: center;
+    align-items: center;
+}
+
+.commercial-support .contact-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1.5rem;
+    background: white;
+    border: 1px solid rgba(99, 102, 241, 0.2);
+    border-radius: 10px;
+    color: #4b5563;
+    text-decoration: none;
+    transition: all 0.2s ease;
+    font-weight: 500;
+}
+
+.commercial-support .contact-link:hover {
+    background: rgba(99, 102, 241, 0.05);
+    border-color: rgba(99, 102, 241, 0.4);
+    color: #6366f1;
+    transform: translateY(-2px);
+}
+
+.commercial-support .contact-link i {
+    font-size: 1.2rem;
+}
+
+@media (max-width: 768px) {
+    .commercial-support .hero-title {
+        font-size: 2rem;
+    }
+
+    .commercial-support .hero-subtitle {
+        font-size: 1.1rem;
+    }
+
+    .commercial-support {
+        padding: 2rem 0 3rem;
+    }
+}
