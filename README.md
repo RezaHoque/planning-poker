@@ -1,4 +1,4 @@
-# Planning Poker 🃏
+# Planning Poker
 
 A **zero-friction, open-source Planning Poker** tool for agile teams.
 
@@ -9,6 +9,7 @@ A **zero-friction, open-source Planning Poker** tool for agile teams.
 - 🐳 Docker-ready
 
 Perfect for Scrum teams, consultants, and companies that want a **simple and private** estimation tool.
+
 Commercial support is available : **https://planningpoker.ninja/commercialsupport**
 
 ---
@@ -28,7 +29,7 @@ Commercial support is available : **https://planningpoker.ninja/commercialsuppor
 
 A free hosted version is available here:
 
-👉 **https://your-hosted-url.com**
+👉 **https://planningpoker.ninja**
 
 This version is intended for:
 
