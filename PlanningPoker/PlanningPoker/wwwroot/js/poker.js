@@ -121,8 +121,12 @@ connection.on("ReceiveAvarageVote", function (average, fibonacciNumber, allUserv
         }
     });
 
-    
-    reactionDiv.innerHTML = `<img src="${gifUrl}" alt="reaction gif" style="max-width:300px; height:300px;" />`;
+    // Only display GIF if a valid URL is provided
+    if (gifUrl && gifUrl.trim() !== "" && gifUrl.startsWith("http")) {
+        reactionDiv.innerHTML = `<img src="${gifUrl}" alt="reaction gif" style="max-width:300px; height:300px;" />`;
+    } else {
+        reactionDiv.innerHTML = "";
+    }
 });
 connection.on("ClearVotes", function (allUserVotes) {
     const votes = allUserVotes;
